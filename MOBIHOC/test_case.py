@@ -10,6 +10,7 @@ import math
 def test(x, full, channel_allocation=1, epsilon=0.001, number_of_user=5, number_of_edge=1, player=None):
 
     selection = np.zeros(number_of_user).astype(int) - 1
+    opt_delta = np.zeros(number_of_user).astype(int) - 1
     ee_local, finished, user_hist = initial_energy_all_local(selection, player)
     print("local=", finished)
     print("total=", [item.total_computation for item in player.users])
@@ -24,7 +25,7 @@ def test(x, full, channel_allocation=1, epsilon=0.001, number_of_user=5, number_
         changed = True
         just_updated = -2
         # changed_k = -1
-        req = get_request(t, channel_allocation, just_updated, player, selection, full, epsilon=epsilon)
+        req = get_request(t, opt_delta, channel_allocation, just_updated, player, selection, full, epsilon=epsilon)
         if req is None:
             print(">>>>>>>>>> no more request")
             changed = False
@@ -46,12 +47,11 @@ def test(x, full, channel_allocation=1, epsilon=0.001, number_of_user=5, number_
                     # player.edges[k].update_resource_allocation(validation["info"])
                     selection[n] = k
 
-        opt_delta = []
         for n in range(number_of_user):
             if player.users[n].config is not None:
-                opt_delta.append(player.users[n].config[5])
+                opt_delta[n] = player.users[n].config[5]
             else:
-                opt_delta.append(-1)
+                opt_delta[n] = -1
         t += 1
         if t % 1 == 0:
             user_hist, energy, finished, transmission, computation, edge_computation = energy_update(player,

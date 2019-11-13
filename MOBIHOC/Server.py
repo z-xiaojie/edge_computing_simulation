@@ -21,6 +21,7 @@ class Controller(threading.Thread):
         self.current_t = current_t
         self.player = None
         self.selection = None
+        self.opt_delta = None
         self.full = None
         self.channel_allocation = None
         self.epsilon = None
@@ -41,9 +42,10 @@ class Controller(threading.Thread):
                 return False
         return True
 
-    def initial_info(self, player=None, selection=None, full=None, channel_allocation=None, epsilon=None):
+    def initial_info(self, player=None, selection=None, opt_delta=None, full=None, channel_allocation=None, epsilon=None):
         self.player = player
         self.selection = selection
+        self.opt_delta = opt_delta
         self.full = full
         self.channel_allocation = channel_allocation
         self.epsilon = epsilon
@@ -68,6 +70,7 @@ class Controller(threading.Thread):
             "current_t": self.current_t,
             "configs": configs,
             "tasks": job_list,
+            "opt_delta": self.opt_delta.tolist(),
             "selection": self.selection.tolist(),
             "number_of_edge": self.player.number_of_edge,
             "number_of_user": self.player.number_of_user,
@@ -127,10 +130,10 @@ class Controller(threading.Thread):
         port = port
         self.s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.s.bind((host, port))
-        print("socket binded to port", port)
+        # print("socket binded to port", port)
         # put the socket into listening mode
         self.s.listen(5)
-        print("socket is listening")
+        # print("socket is listening")
         # a forever loop until client wants to exit
         while True:
             # establish connection with client
@@ -139,7 +142,7 @@ class Controller(threading.Thread):
                 # lock acquired by client
                 # self.print_lock.acquire()
                 self.c.append(c)
-                print('Connected to :', addr[0], ':', addr[1])
+                # print('Connected to :', addr[0], ':', addr[1])
                 # Start a new thread and return its identifier
                 start_new_thread(self.client_threaded, (c,))
             except:
@@ -192,6 +195,7 @@ class Controller(threading.Thread):
                     if self.check_worker([n for n in range(self.player.number_of_user)]):
                         self.close()
                 else:
-                    print(str_data)
+                    #print(str_data)
+                    ddd = 1
             except socket.error:
                 return

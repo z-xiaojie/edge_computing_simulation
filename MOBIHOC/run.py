@@ -63,11 +63,12 @@ def energy_update(player, selection, user_hist, save=True):
     return user_hist, energy, finished, transmission, computation, edge_computation
 
 
-def get_request(current_t, channel_allocation, just_updated, player, selection, full, epsilon):
+def get_request(current_t, opt_delta, channel_allocation, just_updated, player, selection, full, epsilon):
     # reset_request_pool(player.number_of_user)
     start = time.time()
     controller = Controller(current_t)
-    controller.initial_info(player=player, selection=selection, full=full, channel_allocation=channel_allocation, epsilon=epsilon)
+    controller.initial_info(player=player, selection=selection, opt_delta=opt_delta
+                            , full=full, channel_allocation=channel_allocation, epsilon=epsilon)
     controller.reset_request_pool(player.number_of_user)
     controller.optimize_locally(controller.info, [0, 1, 2, 3, 4, 5])
     controller.run(12345)
@@ -107,7 +108,7 @@ def get_request(current_t, channel_allocation, just_updated, player, selection, 
     not_tested = [n for n in range(player.number_of_user)]
     n = 0
     while len(not_tested) > 0:
-        # n = random.choice(not_tested)
+        n = random.choice(not_tested)
         #if n == just_updated:
             #continue
         if controller.request[n] is not None:

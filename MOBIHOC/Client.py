@@ -18,6 +18,7 @@ class Helper:
         self.doing = [n for n in range(start1, end1+1)]
         self.port = 12345
         self.done = False
+        self.cache = []
 
     def connect(self):
         self.s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -29,9 +30,35 @@ class Helper:
         self.request = [None for n in range(number_of_user)]
         self.finish = [0 for n in range(number_of_user)]
 
+    def search_cache(self, info):
+        target = info["who"]
+        for selection, opt_delta, validation in self.cache:
+            same = True
+            for n in range(len(selection)):
+                if n == target.task_id:
+                    continue
+                if selection[n] != info["selection"][n]:
+                    same = False
+                    break
+            for n in range(len(opt_delta)):
+                if n == target.task_id:
+                    continue
+                if opt_delta[n] != info["opt_delta"][n]:
+                    same = False
+                    break
+            if same:
+                return validation
+        return None
+
     def worker(self, info):
-        # start = time.time()
-        validation, target = opt(info)
+        target = info["who"]
+        validation = self.search_cache(info)
+        save, delta = False, -1
+        if validation is None:
+            validation, target = opt(info)
+            save = True
+        else:
+            print("read from cache...")
         if len(validation) > 0:
             validation.sort(key=lambda x: x["config"][0])
             if validation[0]["edge"] != info["selection"][target.task_id] \
@@ -41,6 +68,7 @@ class Helper:
                     "validation": validation[0],
                     "local": False
                 }
+            delta = validation[0]["config"][5]
         else:
             if info["selection"][target.task_id] != -1:
                 self.request[target.task_id] = {
@@ -48,6 +76,9 @@ class Helper:
                     "validation": None,
                     "local": True
                 }
+        if save:
+            info["opt_delta"][target.task_id] = delta
+            self.cache.append((info["selection"], info["opt_delta"], validation))
         self.finish[target.task_id] = 1
 
     def check_worker(self, doing):

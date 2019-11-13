@@ -14,18 +14,18 @@ from Server import Controller
 
 
 iterations = 1
-I = 1
+I = 4
 hist = [[np.zeros(I) for i in range(20)] for j in range(3)]
 selection1, selection2, selection3 = None, None, None
 opt_delta1, opt_delta2 = None, None
 bandwidth1, bandwidth2 = None, None
 cpus = []
 for i in range(iterations):
-    number_of_user, number_of_edge, epsilon = 18, 3, 0.001
+    number_of_user, number_of_edge, epsilon = 15, 3, 0.001
     chs = 10
     t = 0
     #f = 1.25
-    number_of_chs = np.array([random.randint(8, 12) for x in range(number_of_edge)])
+    number_of_chs = np.array([random.randint(8, 10) for x in range(number_of_edge)])
     cpu = np.array([random.uniform(4, 6) * math.pow(10, 9) for x in range(number_of_edge)])
     H = [[round(np.random.rayleigh(np.sqrt(2 / np.pi) * math.pow(10, -3)), 5) for y in range(number_of_edge)] for x in
          range(number_of_user)]
@@ -92,15 +92,15 @@ print(">>>>>>>>>>> partition>>>>>>>>>>")
 print(opt_delta1, "finished", hist[0][0]/iterations)
 print(opt_delta2, "finished", hist[1][0]/iterations)
 print(">>>>>>>>>>> bandwidth1>>>>>>>>>>")
-print(bandwidth1)
-print(bandwidth2)
+print(bandwidth1, np.sum(bandwidth1))
+print(bandwidth2, np.sum(bandwidth1))
 print("adaptive=", list(hist[0][2]/iterations))
 print("full=", list(hist[1][2]/iterations))
 print("local=", list(hist[0][3]/iterations))
 print("it=", list(hist[0][4]/iterations))
 print("H=", H)
 print("cpu=", cpu/math.pow(10, 9))
-print("chs=", chs)
+print("chs=", number_of_chs)
 """
 print(selection1, "finished", hist[2][0]/iterations)
 print("average improvement", hist[2][1]/iterations, hist[2][2]/iterations, hist[2][3]/iterations)
