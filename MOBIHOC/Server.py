@@ -94,21 +94,20 @@ class Controller(threading.Thread):
             "stop_point": self.epsilon
         }
 
-    def search_cache(self, info, edge_id):
+    def search_cache(self, info, user_id, edge_id):
         for s, d, config, task_id, k in self.cache:
-            if task_id != info["who"].task_id and k != edge_id:
+            if task_id != user_id or k != edge_id:
                 continue
-            same = True
             selected = []
             delta = []
             for n in range(len(info["selection"])):
                 if info["selection"][n] == edge_id:
                     selected.append(n)
                     delta.append(info["opt_delta"][n])
-            if s != selected or d != delta:
-                same = False
-            if same:
+            if np.array_equal(s, selected) and np.array_equal(delta, d):
                 return config
+            else:
+                print(s, selected, d, delta)
         return None
 
     def opt(self, info):
@@ -137,10 +136,17 @@ class Controller(threading.Thread):
                     optimize = Offloading(info, k)
                     info["selection"][target.task_id] = k
                     info["opt_delta"][target.task_id] = delta
-                    config = self.search_cache(info, k)
+                    config = self.search_cache(info, target.task_id, k)
                     if config is None:
                         config = optimize.start_optimize(delta=delta)
-                        self.cache.append((copy.copy(info["selection"]), copy.copy(info["opt_delta"]), config, target.task_id, k ))
+                        selected = []
+                        delta = []
+                        for n in range(len(info["number_of_user"])):
+                            if info["selection"][n] == k:
+                                selected.append(n)
+                                delta.append(info["opt_delta"][n])
+                        self.cache.append(
+                            (selected, delta, config, target.task_id, k))
                     else:
                         print("read from cache: get user info", target.task_id)
                     if config is not None and (config[0] < target.local_only_energy or not target.local_only_enabled):
