@@ -75,8 +75,14 @@ class Helper:
                     config = self.search_cache(info, target.task_id, k)
                     if config is None:
                         config = optimize.start_optimize(delta=delta)
+                        selected = []
+                        delta = []
+                        for n in range(len(info["number_of_user"])):
+                            if info["selection"][n] == k:
+                                selected.append(n)
+                                delta.append(info["opt_delta"][n])
                         self.cache.append(
-                            (copy.copy(info["selection"]), copy.copy(info["opt_delta"]), config, target.task_id, k))
+                            (selected, delta, config, target.task_id, k))
                         # print("saving", self.cache[-1])
                     else:
                         print("read from cache: get user info", target.task_id)
