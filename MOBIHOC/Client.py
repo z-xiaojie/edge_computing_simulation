@@ -90,7 +90,7 @@ class Helper:
                 print("done, close connection")
                 self.s.close()
                 return
-            else:
+            elif not self.done:
                 print("start to optimizing...")
                 info = json.loads(str(data.decode('ascii')))
                 self.reset_request_pool(info["number_of_user"])

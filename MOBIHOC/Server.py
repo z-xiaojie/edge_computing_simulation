@@ -175,10 +175,8 @@ class Controller(threading.Thread):
         json_data = json.dumps(self.info).encode("ascii")
         self.send_msg(c, json_data)
         while True:
-            data = c.recv(5024)
-            if not data:
-                break
-            else:
+            try:
+                data = c.recv(5024)
                 str_data = str(data.decode('ascii'))
                 if str_data[0] != 'm':
                     result = json.loads(str(data.decode('ascii')))
@@ -192,3 +190,7 @@ class Controller(threading.Thread):
                     self.send_msg(c, message.encode('ascii'))
                     if self.check_worker([n for n in range(self.player.number_of_user)]):
                         self.close()
+                else:
+                    print(str_data)
+            except socket.error:
+                return
