@@ -40,7 +40,7 @@ class Helper:
                 if info["selection"][n] == edge_id:
                     selected.append(n)
                     delta.append(info["opt_delta"][n])
-            if (np.array(s) == np.array(selected)).all() and (np.array(d) == np.array(delta)).all():
+            if np.array_equal(s, selected) and np.array_equal(delta, d):
                 return config
         return None
 
