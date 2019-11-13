@@ -107,7 +107,7 @@ class Helper:
                     dd = 0
                 print(info["current_t"], "request finished in >>>>>>>>>>>>>>>>", time.time() - start)
                 for n in self.doing:
-                    if self.request[n]["validation"] is not None:
+                    if self.request[n] is not None:
                         print("update request for user", n, "=", self.request[n]["validation"]["config"])
                     else:
                         print("update request for user", n, "= None")
