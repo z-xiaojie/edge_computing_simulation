@@ -58,7 +58,7 @@ class Helper:
             validation, target = opt(info)
             save = True
         else:
-            print("read from cache...")
+            print("read from cache: get user info", target.task_id)
         if len(validation) > 0:
             validation.sort(key=lambda x: x["config"][0])
             if validation[0]["edge"] != info["selection"][target.task_id] \
