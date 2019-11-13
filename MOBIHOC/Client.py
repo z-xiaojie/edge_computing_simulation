@@ -35,8 +35,8 @@ class Helper:
             if task_id != info["who"].task_id and k != edge_id:
                 continue
             same = True
-            selected = np.array([])
-            delta = np.array(())
+            selected = []
+            delta = []
             for n in range(len(info["selection"])):
                 if info["selection"][n] == edge_id:
                     selected.append(n)
