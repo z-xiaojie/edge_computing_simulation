@@ -31,28 +31,25 @@ class Helper:
         self.finish = [0 for n in range(number_of_user)]
 
     def search_cache(self, info):
-        target = info["who"]
-        for selection, opt_delta, validation in self.cache:
+        for selection, opt_delta, config, task_id in self.cache:
+            if task_id != info["who"].task_id:
+                continue
             same = True
             for n in range(len(selection)):
-                if n == target.task_id:
-                    continue
                 if selection[n] != info["selection"][n]:
                     same = False
                     break
             for n in range(len(opt_delta)):
-                if n == target.task_id:
-                    continue
                 if opt_delta[n] != info["opt_delta"][n]:
                     same = False
                     break
             if same:
-                return validation
+                return config
         return None
 
     def worker(self, info):
         target = info["who"]
-        validation = self.search_cache(info)
+        validation = self.search_cache(info, self.cache)
         save, delta = False, -1
         if validation is None:
             validation, target = opt(info)
@@ -78,7 +75,7 @@ class Helper:
                 }
         if save:
             info["opt_delta"][target.task_id] = delta
-            self.cache.append((info["selection"], info["opt_delta"], validation))
+            self.cache.append((info["selection"], info["opt_delta"], validation, target.task_id))
         self.finish[target.task_id] = 1
 
     def check_worker(self, doing):
