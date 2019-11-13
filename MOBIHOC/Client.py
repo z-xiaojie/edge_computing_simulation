@@ -30,32 +30,78 @@ class Helper:
         self.request = [None for n in range(number_of_user)]
         self.finish = [0 for n in range(number_of_user)]
 
-    def search_cache(self, info):
-        for selection, opt_delta, config, task_id in self.cache:
-            if task_id != info["who"].task_id:
+    def search_cache(self, info, edge_id):
+        for s, d, config, task_id, k in self.cache:
+            if task_id != info["who"].task_id and k != edge_id:
                 continue
             same = True
-            for n in range(len(selection)):
-                if selection[n] != info["selection"][n]:
-                    same = False
-                    break
-            for n in range(len(opt_delta)):
-                if opt_delta[n] != info["opt_delta"][n]:
-                    same = False
-                    break
+            selected = np.array([])
+            delta = np.array(())
+            for n in range(len(info["selection"])):
+                if info["selection"][n] == edge_id:
+                    selected.append(n)
+                    delta.append(info["opt_delta"][n])
+            if s != selected or d != delta:
+                same = False
             if same:
                 return config
         return None
 
-    def worker(self, info):
+    def opt(self, info):
         target = info["who"]
-        validation = self.search_cache(info)
-        save, delta = False, -1
-        if validation is None:
-            validation, target = opt(info)
-            save = True
+        validation = []
+        if not info["full"]:
+            feasible = [0]
+            small_data = target.DAG.jobs[0].input_data
+            for delta in range(1, len(target.DAG.jobs) - 1):
+                if target.DAG.jobs[delta].input_data < small_data:
+                    feasible.append(delta)
+                    small_data = target.DAG.jobs[delta].input_data
+                else:
+                    break
+            for delta in feasible:
+                info["Y_n"][target.task_id], info["X_n"][target.task_id], info["B"][target.task_id] = 0, 0, 0
+                for m in range(0, delta):
+                    info["Y_n"][target.task_id] += target.DAG.jobs[m].computation
+                for m in range(delta, target.DAG.length):
+                    info["X_n"][target.task_id] += target.DAG.jobs[m].computation
+                if delta == 0:
+                    info["B"][target.task_id] = target.DAG.jobs[delta].input_data
+                else:
+                    info["B"][target.task_id] = target.DAG.jobs[delta - 1].output_data
+                for k in range(info["number_of_edge"]):
+                    optimize = Offloading(info, k)
+                    info["selection"][target.task_id] = k
+                    info["opt_delta"][target.task_id] = delta
+                    config = self.search_cache(info, k)
+                    if config is None:
+                        config = optimize.start_optimize(delta=delta)
+                        self.cache.append((copy.copy(info["selection"]), copy.copy(info["opt_delta"]), config, target.task_id, k ))
+                    else:
+                        print("read from cache: get user info", target.task_id)
+                    if config is not None and (config[0] < target.local_only_energy or not target.local_only_enabled):
+                        validation.append({
+                            "edge": k,
+                            "config": config
+                        })
         else:
-            print("read from cache: get user info", target.task_id)
+            delta = 0
+            info["Y_n"][target.task_id], info["X_n"][target.task_id], info["B"][target.task_id] = 0, 0, 0
+            for m in range(0, target.DAG.length):
+                info["X_n"][target.task_id] += target.DAG.jobs[m].computation
+            info["B"][target.task_id] = target.DAG.jobs[delta].input_data
+            for k in range(info["number_of_edge"]):
+                optimize = Offloading(info, k)
+                config = optimize.start_optimize(delta=delta)
+                if config is not None and (config[0] < target.local_only_energy or not target.local_only_enabled):
+                    validation.append({
+                        "edge": k,
+                        "config": config
+                    })
+        return validation, target
+
+    def worker(self, info):
+        validation, target = opt(info)
         if len(validation) > 0:
             validation.sort(key=lambda x: x["config"][0])
             if validation[0]["edge"] != info["selection"][target.task_id] \
@@ -65,7 +111,6 @@ class Helper:
                     "validation": validation[0],
                     "local": False
                 }
-            delta = validation[0]["config"][5]
         else:
             if info["selection"][target.task_id] != -1:
                 self.request[target.task_id] = {
@@ -73,9 +118,6 @@ class Helper:
                     "validation": None,
                     "local": True
                 }
-        if save:
-            info["opt_delta"][target.task_id] = delta
-            self.cache.append((info["selection"], info["opt_delta"], validation, target.task_id))
         self.finish[target.task_id] = 1
 
     def check_worker(self, doing):
