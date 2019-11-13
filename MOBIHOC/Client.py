@@ -30,9 +30,9 @@ class Helper:
         self.request = [None for n in range(number_of_user)]
         self.finish = [0 for n in range(number_of_user)]
 
-    def search_cache(self, info, edge_id):
+    def search_cache(self, info, user_id, edge_id):
         for s, d, config, task_id, k in self.cache:
-            if task_id != info["who"].task_id and k != edge_id:
+            if task_id != user_id or k != edge_id:
                 continue
             same = True
             selected = []
@@ -73,10 +73,11 @@ class Helper:
                     optimize = Offloading(info, k)
                     info["selection"][target.task_id] = k
                     info["opt_delta"][target.task_id] = delta
-                    config = self.search_cache(info, k)
+                    config = self.search_cache(info, target.task_id, k)
                     if config is None:
                         config = optimize.start_optimize(delta=delta)
-                        self.cache.append((copy.copy(info["selection"]), copy.copy(info["opt_delta"]), config, target.task_id, k ))
+                        self.cache.append(
+                            (copy.copy(info["selection"]), copy.copy(info["opt_delta"]), config, target.task_id, k))
                         # print("saving", self.cache[-1])
                     else:
                         print("read from cache: get user info", target.task_id)
@@ -179,7 +180,10 @@ class Helper:
                 print(info["current_t"], "request finished in >>>>>>>>>>>>>>>>", time.time() - start)
                 for n in self.doing:
                     if self.request[n] is not None:
-                        print("update request for user", n, "=", self.request[n]["validation"]["config"])
+                        if self.request[n]["validation"] is not None:
+                            print("update request for user", n, "=", self.request[n]["validation"]["config"])
+                        else:
+                            print("update request for user", n, "= local")
                     else:
                         print("update request for user", n, "= None")
                 self.s.send(json.dumps({"req": self.request, "doing": self.doing}).encode("utf-8"))
