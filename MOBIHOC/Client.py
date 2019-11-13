@@ -77,6 +77,7 @@ class Helper:
                     if config is None:
                         config = optimize.start_optimize(delta=delta)
                         self.cache.append((copy.copy(info["selection"]), copy.copy(info["opt_delta"]), config, target.task_id, k ))
+                        print("saving", self.cache[-1])
                     else:
                         print("read from cache: get user info", target.task_id)
                     if config is not None and (config[0] < target.local_only_energy or not target.local_only_enabled):
