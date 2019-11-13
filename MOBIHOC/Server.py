@@ -140,13 +140,13 @@ class Controller(threading.Thread):
                     if config is None:
                         config = optimize.start_optimize(delta=delta)
                         selected = []
-                        delta = []
+                        partition_delta = []
                         for n in range(info["number_of_user"]):
                             if info["selection"][n] == k:
                                 selected.append(n)
-                                delta.append(info["opt_delta"][n])
+                                partition_delta.append(info["opt_delta"][n])
                         self.cache.append(
-                            (selected, delta, config, target.task_id, k))
+                            (selected, partition_delta, config, target.task_id, k))
                     else:
                         print("read from cache: get user info", target.task_id)
                     if config is not None and (config[0] < target.local_only_energy or not target.local_only_enabled):
