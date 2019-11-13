@@ -42,6 +42,8 @@ class Helper:
                     delta.append(info["opt_delta"][n])
             if np.array_equal(s, selected) and np.array_equal(delta, d):
                 return config
+            else:
+                print(s, selected, d, delta)
         return None
 
     def opt(self, info):
