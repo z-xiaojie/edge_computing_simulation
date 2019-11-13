@@ -107,7 +107,10 @@ class Helper:
                     dd = 0
                 print(info["current_t"], "request finished in >>>>>>>>>>>>>>>>", time.time() - start)
                 for n in self.doing:
-                    print("update request for user", n, "=", self.request[n]["validation"]["config"])
+                    if self.request[n]["validation"] is not None:
+                        print("update request for user", n, "=", self.request[n]["validation"]["config"])
+                    else:
+                        print("update request for user", n, "= None")
                 self.s.send(json.dumps({"req": self.request, "doing": self.doing}).encode("utf-8"))
                 self.done = True
 

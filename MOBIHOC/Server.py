@@ -146,7 +146,14 @@ class Controller(threading.Thread):
                 break
 
     def close(self):
-        self.s.closer()
+        for c in self.c:
+            try:
+                message = "close"
+                self.send_msg(c, message.encode('ascii'))
+                c.close()
+            except socket.error:
+                continue
+        self.s.close()
 
     def notify_opt(self):
         try:
@@ -182,8 +189,6 @@ class Controller(threading.Thread):
                         self.finish[n] = 1
                     message = "waiting"
                     self.send_msg(c, message.encode('ascii'))
-                    # message = "waiting"
-                    # self.send_msg(c, message.encode('ascii'))
                     if self.check_worker([n for n in range(self.player.number_of_user)]):
                         self.close()
                 else:
