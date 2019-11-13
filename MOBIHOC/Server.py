@@ -166,7 +166,7 @@ class Controller(threading.Thread):
 
     def worker(self, info):
         # start = time.time()
-        validation, target = opt(info)
+        validation, target = self.opt(info)
         if len(validation) > 0:
             validation.sort(key=lambda x: x["config"][0])
             if validation[0]["edge"] != info["selection"][target.task_id] \
