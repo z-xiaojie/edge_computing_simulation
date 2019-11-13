@@ -34,16 +34,13 @@ class Helper:
         for s, d, config, task_id, k in self.cache:
             if task_id != user_id or k != edge_id:
                 continue
-            same = True
             selected = []
             delta = []
             for n in range(len(info["selection"])):
                 if info["selection"][n] == edge_id:
                     selected.append(n)
                     delta.append(info["opt_delta"][n])
-            if s != selected or d != delta:
-                same = False
-            if same:
+            if np.array(s) == np.array(selected) and np.array(d) == np.array(delta):
                 return config
         return None
 
