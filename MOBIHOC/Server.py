@@ -141,7 +141,7 @@ class Controller(threading.Thread):
                         config = optimize.start_optimize(delta=delta)
                         selected = []
                         delta = []
-                        for n in range(len(info["number_of_user"])):
+                        for n in range(info["number_of_user"]):
                             if info["selection"][n] == k:
                                 selected.append(n)
                                 delta.append(info["opt_delta"][n])
