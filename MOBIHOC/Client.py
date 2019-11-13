@@ -49,7 +49,7 @@ class Helper:
 
     def worker(self, info):
         target = info["who"]
-        validation = self.search_cache(info, self.cache)
+        validation = self.search_cache(info)
         save, delta = False, -1
         if validation is None:
             validation, target = opt(info)
