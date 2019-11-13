@@ -38,7 +38,7 @@ for i in range(iterations):
     while t < I:
         #number_of_chs = np.array([random.randint(16, 24) for x in range(number_of_edge)])
         for k in range(number_of_edge):
-            player.edges[k].freq = cpu[k] + 3 * math.pow(10, 9)
+            player.edges[k].freq = cpu[k]
             cpu[k] += math.pow(10, 9)
         it1, finish_hist1, bandwidth1, opt_delta1, selection1, finished1, energy1, local, improvement1 \
             = test(1, False, channel_allocation=1, epsilon=epsilon, number_of_user=number_of_user, number_of_edge=number_of_edge
@@ -50,7 +50,6 @@ for i in range(iterations):
         hist[0][3][t] += local
         hist[0][4][t] += it1
 
-        break
 
         it2, finish_hist2, bandwidth2, opt_delta2, selection2, finished2, energy2, local, improvement2 \
             = test(1, True, channel_allocation=1, epsilon=epsilon, number_of_user=number_of_user, number_of_edge=number_of_edge
