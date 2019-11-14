@@ -2,7 +2,7 @@
 import socket
 import math
 import numpy as np
-# import thread module
+from threading import Lock
 from _thread import *
 from Client import Helper
 import threading
@@ -32,6 +32,7 @@ class Controller(threading.Thread, Optimization):
         # self.initial_info()
         self.request = None
         self.finish = None
+        self.lock = Lock()
 
     def reset_request_pool(self, number_of_user):
         self.request = [None for n in range(number_of_user)]
@@ -188,15 +189,17 @@ class Controller(threading.Thread, Optimization):
                     request = result["req"]
                     doing = result["doing"]
                     # print("request", request)
+                    message = "waiting"
+                    self.send_msg(c, message.encode('ascii'))
+                    self.lock.acquire()
                     for n in doing:
                         self.request[n] = request[n]
                         self.finish[n] = 1
-                    message = "waiting"
-                    self.send_msg(c, message.encode('ascii'))
-                    if self.check_worker([n for n in range(self.player.number_of_user)]):
-                        self.close()
+                    self.lock.release()
+                    while not self.check_worker([n for n in range(self.player.number_of_user)]):
+                        ddd = 1
+                    self.close()
                 else:
-                    #print(str_data)
                     ddd = 1
             except socket.error:
                 return

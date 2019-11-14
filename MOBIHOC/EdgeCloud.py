@@ -34,7 +34,10 @@ class EdgeCloud:
         return False, self.number_of_user - 1
 
     def remove(self, task):
-        self.tasks.remove(task)
+        try:
+            self.tasks.remove(task)
+        except:
+            ddd = 1
         self.number_of_user = len(self.tasks)
 
     def get_ch_number(self, n):

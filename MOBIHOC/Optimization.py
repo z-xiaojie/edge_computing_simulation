@@ -57,8 +57,8 @@ class Optimization:
                                 partition_delta.append(info["opt_delta"][n])
                         self.cache.append(
                             (selected, partition_delta, config, target.task_id, k))
-                    else:
-                        print("read from cache: get user info", target.task_id, k, delta)
+                    #else:
+                        #print("read from cache: get user info", target.task_id, k, delta)
                     if config is not None and (config[0] < target.local_only_energy or not target.local_only_enabled):
                         validation.append({
                             "edge": k,
