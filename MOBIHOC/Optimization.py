@@ -7,6 +7,9 @@ class Optimization:
         self.cache = []
         # self.cached_number = []
 
+    def clean_cache(self):
+        self.cache = []
+
     def search_cache(self, info, user_id, edge_id):
         for s, d, config, task_id, k in self.cache:
             if task_id != user_id or k != edge_id:

@@ -93,6 +93,8 @@ class Helper(Optimization):
             elif not self.done:
                 print("start to optimizing...")
                 info = json.loads(str(data.decode('ascii')))
+                if info["current_t"] == 0:
+                    self.clean_cache()
                 self.reset_request_pool(info["number_of_user"])
                 for n in self.doing:
                     info["who"] = Device(info["user_cpu"][n], n, info["H"][n]
