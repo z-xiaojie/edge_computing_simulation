@@ -72,6 +72,7 @@ class Controller(threading.Thread, Optimization):
             "current_t": self.current_t,
             "configs": configs,
             "tasks": job_list,
+            "local_only_energy": [item.local_only_energy for item in player.users],
             "opt_delta": self.opt_delta.tolist(),
             "selection": self.selection.tolist(),
             "number_of_edge": self.player.number_of_edge,
