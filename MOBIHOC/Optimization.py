@@ -56,8 +56,6 @@ class Optimization:
                         config = optimize.start_optimize(delta=delta, local_only_energy=info["local_only_energy"][target.task_id])
                         save = True
                     else:
-                        #self.cached_number += 1
-                        #if self.cached_number % 10 == 0:
                         print("read from cached times", target.task_id, "edge=", k , "delta=",delta)
                     if config is not None and (config[0] < info["local_only_energy"][target.task_id] or not info["local_only_enabled"][target.task_id]):
                         validation.append({
@@ -81,10 +79,29 @@ class Optimization:
             info["B"][target.task_id] = target.DAG.jobs[delta].input_data
             for k in range(info["number_of_edge"]):
                 optimize = Offloading(info, k)
-                config = optimize.start_optimize(delta=delta)
-                if config is not None and (config[0] < target.local_only_energy or not target.local_only_enabled):
+                info["selection"][target.task_id] = k
+                info["opt_delta"][target.task_id] = delta
+                config = self.search_cache(info, target.task_id, k)
+                save = False
+                if config is None:
+                    config = optimize.start_optimize(delta=delta,
+                                                     local_only_energy=info["local_only_energy"][target.task_id])
+                    save = True
+                else:
+                    print("read from cached times", target.task_id, "edge=", k, "delta=", delta)
+                if config is not None and (
+                        config[0] < info["local_only_energy"][target.task_id] or not info["local_only_enabled"][target.task_id]):
                     validation.append({
                         "edge": k,
                         "config": config
                     })
+                    if save:
+                        selected = []
+                        partition_delta = []
+                        for n in range(info["number_of_user"]):
+                            if info["selection"][n] == k:
+                                selected.append(n)
+                                partition_delta.append(info["opt_delta"][n])
+                        self.cache.append(
+                            (selected, partition_delta, config, target.task_id, k))
         return validation, target

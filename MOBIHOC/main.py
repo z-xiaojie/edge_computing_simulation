@@ -21,7 +21,7 @@ opt_delta1, opt_delta2 = None, None
 bandwidth1, bandwidth2 = None, None
 cpus = []
 for i in range(iterations):
-    number_of_user, number_of_edge, epsilon = 18, 3, 0.001
+    number_of_user, number_of_edge, epsilon = 15, 3, 0.001
     chs = 10
     t = 0
     #f = 1.25
@@ -39,16 +39,19 @@ for i in range(iterations):
         #number_of_chs = np.array([random.randint(16, 24) for x in range(number_of_edge)])
         for k in range(number_of_edge):
             player.edges[k].freq = cpu[k]
-            cpu[k] += 0.5 * math.pow(10, 9)
+            cpu[k] += math.pow(10, 9)
         it1, finish_hist1, bandwidth1, opt_delta1, selection1, finished1, energy1, local, improvement1 \
             = test(1, False, channel_allocation=1, epsilon=epsilon, number_of_user=number_of_user, number_of_edge=number_of_edge
                                       ,player=copy.deepcopy(player))
         print(bandwidth1)
+
         hist[0][0][t] += finished1
         hist[0][1][t] += improvement1
         hist[0][2][t] += energy1
         hist[0][3][t] += local
         hist[0][4][t] += it1
+
+        break
 
         it2, finish_hist2, bandwidth2, opt_delta2, selection2, finished2, energy2, local, improvement2 \
             = test(1, True, channel_allocation=1, epsilon=epsilon, number_of_user=number_of_user, number_of_edge=number_of_edge
