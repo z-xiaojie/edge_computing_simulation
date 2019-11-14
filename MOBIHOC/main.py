@@ -14,7 +14,7 @@ from Server import Controller
 
 
 iterations = 1
-I = 4
+I = 1
 hist = [[np.zeros(I) for i in range(20)] for j in range(3)]
 selection1, selection2, selection3 = None, None, None
 opt_delta1, opt_delta2 = None, None

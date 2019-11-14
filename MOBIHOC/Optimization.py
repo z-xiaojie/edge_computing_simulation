@@ -50,7 +50,7 @@ class Optimization:
                     config = self.search_cache(info, target.task_id, k)
                     save = False
                     if config is None:
-                        config = optimize.start_optimize(delta=delta)
+                        config = optimize.start_optimize(delta=delta, local_only_energy=target.local_only_energy)
                         save = True
                     else:
                         #self.cached_number += 1

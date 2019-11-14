@@ -288,7 +288,7 @@ class Offloading:
         # plt.show()
         return False, ee, t
 
-    def start_optimize(self, delta=None):
+    def start_optimize(self, delta=None, local_only_energy=None):
         who = self.user_id
         self.set_initial_sub_channel()
         self.set_multipliers(step=self.step, p_adjust=0.5, delta_l_n=self.number_of_offloaded_user * 5
@@ -299,14 +299,14 @@ class Offloading:
             target_energy = self.p_n[who] * self.get_ch_number(who) * self.t_n[who] \
                     + self.k * self.Y_n[who] * math.pow(self.f_n[who], 2)
             rate = self.W * self.get_ch_number(who) * math.log2(1 + self.p_n[who] * math.pow(self.H[who][self.edge_id], 2) / self.N_0)
-            finish_time1 = self.t_n[who] + self.X_n[who]/self.f_n_k[who][0] + self.Y_n[who]/self.f_n[who] - self.D_n[who]
+            #finish_time1 = self.t_n[who] + self.X_n[who]/self.f_n_k[who][0] + self.Y_n[who]/self.f_n[who] - self.D_n[who]
             finish_time2 = self.B[who]/rate + self.X_n[who] / self.f_n_k[who][0] + self.Y_n[who] / self.f_n[who] - \
                            self.D_n[who]
             if delta == 0:
                 self.f_n[who] = 0
             return [round(target_energy, 7), round(self.f_n[who]), round(self.f_n_k[who][0])
                  , round(self.p_n[who], 10), self.get_ch_number(who), delta
-                 ,self.edge_id, t, round(finish_time2, 7)]
+                 ,self.edge_id, t, round(finish_time2, 7), round(local_only_energy, 7)]
         else:
             return None
 
