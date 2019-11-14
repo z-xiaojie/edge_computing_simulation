@@ -20,6 +20,10 @@ class Helper(Optimization):
         self.done = False
         self.cache = []
 
+        self.number_of_opt = 0
+        self.number_of_finished_opt = 0
+        self.validation = []
+
     def connect(self):
         self.s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.s.connect((self.host, self.port))
