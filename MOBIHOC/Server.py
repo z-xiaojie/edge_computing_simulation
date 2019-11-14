@@ -92,7 +92,7 @@ class Controller(threading.Thread, Optimization):
             "full": self.full,
             "default_channel": 1,
             "channel_allocation": self.channel_allocation,
-            "step": 0.001,
+            "step": 0.005,
             "interval": 5,
             "stop_point": self.epsilon
         }

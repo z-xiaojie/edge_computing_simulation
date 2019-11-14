@@ -70,7 +70,7 @@ def get_request(current_t, opt_delta, channel_allocation, just_updated, player, 
     controller.initial_info(player=player, selection=selection, opt_delta=opt_delta
                             , full=full, channel_allocation=channel_allocation, epsilon=epsilon)
     controller.reset_request_pool(player.number_of_user)
-    controller.optimize_locally(controller.info, [0, 1, 2, 3, 4, 5, 6, 7])
+    controller.optimize_locally(controller.info, [0, 1, 2, 3, 4, 5])
     controller.run(12345)
     # controller.notify_opt()
     print("waiting...", controller.finish)
