@@ -306,7 +306,7 @@ class Offloading:
                 self.f_n[who] = 0
             return [round(target_energy, 7), round(self.f_n[who]), round(self.f_n_k[who][0])
                  , round(self.p_n[who], 10), self.get_ch_number(who), delta
-                 ,self.edge_id, t, round(finish_time2, 7), round(local_only_energy, 7)]
+                 ,self.edge_id, t, round(finish_time2, 7)]
         else:
             return None
 

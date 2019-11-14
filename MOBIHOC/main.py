@@ -50,8 +50,6 @@ for i in range(iterations):
         hist[0][3][t] += local
         hist[0][4][t] += it1
 
-        break
-
         it2, finish_hist2, bandwidth2, opt_delta2, selection2, finished2, energy2, local, improvement2 \
             = test(1, True, channel_allocation=1, epsilon=epsilon, number_of_user=number_of_user, number_of_edge=number_of_edge
                                          ,player=copy.deepcopy(player))
