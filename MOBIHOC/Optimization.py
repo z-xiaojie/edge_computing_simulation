@@ -54,8 +54,10 @@ class Optimization:
                         partition_delta.append(info["opt_delta"][n])
                 self.cache.append(
                     (selected, partition_delta, config, target.task_id, k))
-            self.number_of_finished_opt += 1
             self.lock.release()
+        self.lock.acquire()
+        self.number_of_finished_opt += 1
+        self.lock.release()
 
     def opt(self, info):
         target = info["who"]
