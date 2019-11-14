@@ -13,20 +13,20 @@ import threading
 from Server import Controller
 
 
-iterations = 1
-I = 5
+iterations = 4
+I = 1
 hist = [[np.zeros(I) for i in range(20)] for j in range(3)]
 selection1, selection2, selection3 = None, None, None
 opt_delta1, opt_delta2 = None, None
 bandwidth1, bandwidth2 = None, None
 cpus = []
 for i in range(iterations):
-    number_of_user, number_of_edge, epsilon = 10, 3, 0.001
+    number_of_user, number_of_edge, epsilon = 15, 3, 0.001
     chs = 10
     t = 0
     #f = 1.25
-    number_of_chs = np.array([random.randint(6, 10) for x in range(number_of_edge)])
-    cpu = np.array([random.uniform(3, 4.5) * math.pow(10, 9) for x in range(number_of_edge)])
+    number_of_chs = np.array([random.randint(6, 15) for x in range(number_of_edge)])
+    cpu = np.array([random.uniform(4, 6) * math.pow(10, 9) for x in range(number_of_edge)])
     H = [[round(np.random.rayleigh(np.sqrt(2 / np.pi) * math.pow(10, -3)), 5) for y in range(number_of_edge)] for x in
          range(number_of_user)]
     d_cpu = np.array([random.uniform(1.5, 2.5) * math.pow(10, 9) for x in range(number_of_user)])
@@ -39,7 +39,7 @@ for i in range(iterations):
         #number_of_chs = np.array([random.randint(16, 24) for x in range(number_of_edge)])
         for k in range(number_of_edge):
             player.edges[k].freq = cpu[k]
-            cpu[k] += 0.5 * math.pow(10, 9)
+            cpu[k] += math.pow(10, 9)
         it1, finish_hist1, bandwidth1, opt_delta1, selection1, finished1, energy1, local, improvement1 \
             = test(0, False, channel_allocation=1, epsilon=epsilon, number_of_user=number_of_user, number_of_edge=number_of_edge
                                       ,player=copy.deepcopy(player))

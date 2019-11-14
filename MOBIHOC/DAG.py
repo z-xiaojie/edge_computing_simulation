@@ -83,7 +83,7 @@ class DAG:
 
     def create(self, freq):
         self.jobs = []
-        output_data = int(random.randint(300, 1000)) * 8000
+        output_data = int(random.randint(300, 1500)) * 8000
         # density = random.randint(0, self.length - 1)
         # complexity = random.randint(45, 100)
         # low_complexity = random.randint(15, 35)
@@ -92,10 +92,10 @@ class DAG:
             output_data = int(random.uniform(250, 750)) * 8000
             if m <= 0:
                 # computation = int(input_data * complexity)  # input_data
-                computation = random.uniform(0.01, 0.15) * freq
+                computation = random.uniform(0.01, 0.12) * freq
             else:
                 # computation = int(input_data * low_complexity)  # input_data
-                computation = random.uniform(0.10, 0.30) * freq / (self.length - 1)
+                computation = random.uniform(0.10, 0.35) * freq / (self.length - 1)
             pred_id = m - 1
             succ_id = m + 1
             self.jobs.append(JOB(m+1, computation, input_data, output_data
