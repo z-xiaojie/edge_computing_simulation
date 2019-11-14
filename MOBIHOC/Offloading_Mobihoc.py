@@ -228,9 +228,9 @@ class Offloading:
                 self.t_n[n] = self.get_t(n, k)
                 self.p_n[n] = min(self.N_0 * (math.pow(2, self.B[n]/(self.t_n[n] * self.get_ch_number(n) * self.W))-1)
                                   / math.pow(self.H[n][self.edge_id], 2), self.P_max[n]/self.get_ch_number(n))
-                rate = self.W * self.get_ch_number(n) * math.log2(
-                    1 + self.p_n[n] * math.pow(self.H[n][self.edge_id], 2) / self.N_0)
-                self.t_n_n[n] = round(rate/8000, 0)
+                # rate = self.W * self.get_ch_number(n) * math.log2(
+                #    1 + self.p_n[n] * math.pow(self.H[n][self.edge_id], 2) / self.N_0)
+                # self.t_n_n[n] = round(rate/8000, 0)
         # print(self.user_id, self.t_n_n)
 
     def assign_ch(self):
@@ -245,8 +245,6 @@ class Offloading:
                     if self.selection[n] != self.edge_id:
                         continue
                     need_rate = self.B[n] / self.t_n[n]
-                    #need_rate = self.W * self.get_ch_number(n) * math.log2(
-                    #    1 + self.p_n[n] * math.pow(self.H[n][self.edge_id], 2) / self.N_0)
                     cgs = self.get_ch_number(n)
                     a = need_rate / (self.W * (cgs + 1))
                     b = need_rate / (self.W * cgs)

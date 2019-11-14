@@ -13,15 +13,15 @@ import threading
 from Server import Controller
 
 
-iterations = 5
-I = 1
+iterations = 1
+I = 5
 hist = [[np.zeros(I) for i in range(20)] for j in range(3)]
 selection1, selection2, selection3 = None, None, None
 opt_delta1, opt_delta2 = None, None
 bandwidth1, bandwidth2 = None, None
 cpus = []
 for i in range(iterations):
-    number_of_user, number_of_edge, epsilon = 15, 3, 0.001
+    number_of_user, number_of_edge, epsilon = 10, 3, 0.001
     chs = 10
     t = 0
     #f = 1.25

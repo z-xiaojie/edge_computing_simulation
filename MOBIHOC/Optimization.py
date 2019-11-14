@@ -67,6 +67,7 @@ class Optimization:
                     self.cache.append(
                         (selected, partition_delta, config, target.task_id, k))
                 self.lock.release()
+
         self.lock.acquire()
         self.number_of_finished_opt += 1
         self.lock.release()
