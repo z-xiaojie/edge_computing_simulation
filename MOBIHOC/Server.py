@@ -90,14 +90,14 @@ class Controller(threading.Thread, Optimization):
             "full": self.full,
             "default_channel": 1,
             "channel_allocation": self.channel_allocation,
-            "step": 0.005,
+            "step": 0.01,
             "interval": 10,
             "stop_point": self.epsilon
         }
 
     def worker(self, info):
         # start = time.time()
-        validation, target = self.opt(info)
+        validation, target = self.opt(copy.copy(info))
         if len(validation) > 0:
             validation.sort(key=lambda x: x["config"][0])
             if validation[0]["edge"] != info["selection"][target.task_id] \
