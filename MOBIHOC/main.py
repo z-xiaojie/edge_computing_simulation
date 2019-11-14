@@ -14,7 +14,7 @@ from Server import Controller
 
 
 iterations = 5
-I = 6
+I = 1
 hist = [[np.zeros(I) for i in range(20)] for j in range(3)]
 selection1, selection2, selection3 = None, None, None
 opt_delta1, opt_delta2 = None, None
@@ -26,7 +26,7 @@ for i in range(iterations):
     t = 0
     #f = 1.25
     number_of_chs = np.array([random.randint(6, 10) for x in range(number_of_edge)])
-    cpu = np.array([random.uniform(4, 6) * math.pow(10, 9) for x in range(number_of_edge)])
+    cpu = np.array([random.uniform(3.5, 5.5) * math.pow(10, 9) for x in range(number_of_edge)])
     H = [[round(np.random.rayleigh(np.sqrt(2 / np.pi) * math.pow(10, -3)), 5) for y in range(number_of_edge)] for x in
          range(number_of_user)]
     d_cpu = np.array([random.uniform(1.5, 2.5) * math.pow(10, 9) for x in range(number_of_user)])
@@ -41,7 +41,7 @@ for i in range(iterations):
             player.edges[k].freq = cpu[k]
             cpu[k] += 0.5 * math.pow(10, 9)
         it1, finish_hist1, bandwidth1, opt_delta1, selection1, finished1, energy1, local, improvement1 \
-            = test(1, False, channel_allocation=1, epsilon=epsilon, number_of_user=number_of_user, number_of_edge=number_of_edge
+            = test(0, False, channel_allocation=1, epsilon=epsilon, number_of_user=number_of_user, number_of_edge=number_of_edge
                                       ,player=copy.deepcopy(player))
         print(bandwidth1)
 
@@ -52,7 +52,7 @@ for i in range(iterations):
         hist[0][4][t] += it1
 
         it2, finish_hist2, bandwidth2, opt_delta2, selection2, finished2, energy2, local, improvement2 \
-            = test(1, True, channel_allocation=1, epsilon=epsilon, number_of_user=number_of_user, number_of_edge=number_of_edge
+            = test(1, False, channel_allocation=1, epsilon=epsilon, number_of_user=number_of_user, number_of_edge=number_of_edge
                                          ,player=copy.deepcopy(player))
         print(bandwidth2)
 

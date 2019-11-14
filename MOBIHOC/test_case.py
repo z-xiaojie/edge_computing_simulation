@@ -26,7 +26,7 @@ def test(x, full, channel_allocation=1, epsilon=0.001, number_of_user=5, number_
         changed = True
         just_updated = -2
         # changed_k = -1
-        req = get_request(t, opt_delta, channel_allocation, just_updated, player, selection, full, epsilon=epsilon)
+        req = get_request(x, t, opt_delta, channel_allocation, just_updated, player, selection, full, epsilon=epsilon)
         if req is None:
             print(">>>>>>>>>> no more request")
             changed = False
@@ -77,6 +77,9 @@ def test(x, full, channel_allocation=1, epsilon=0.001, number_of_user=5, number_
                 print(t, round(np.sum(energy), 5), "/", local_sum , np.sum(finished), F,  ">>>", n, ">>>", validation)
 
         if not changed:
+            break
+
+        if t > 50:
             break
 
     opt_cpu = []

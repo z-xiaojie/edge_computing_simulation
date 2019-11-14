@@ -34,6 +34,10 @@ class Controller(threading.Thread, Optimization):
         self.finish = None
         self.lock = Lock()
 
+        self.number_of_opt = 0
+        self.number_of_finished_opt = 0
+        self.validation = []
+
     def reset_request_pool(self, number_of_user):
         self.request = [None for n in range(number_of_user)]
         self.finish = [0 for n in range(number_of_user)]
@@ -92,7 +96,7 @@ class Controller(threading.Thread, Optimization):
             "full": self.full,
             "default_channel": 1,
             "channel_allocation": self.channel_allocation,
-            "step": 0.001,
+            "step": 0.005,
             "interval": 10,
             "stop_point": self.epsilon
         }
