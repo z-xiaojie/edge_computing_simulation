@@ -5,7 +5,7 @@ import numpy as np
 class Optimization:
     def __init__(self):
         self.cache = []
-        self.cached = 0
+        self.cached_number = 0
 
     def search_cache(self, info, user_id, edge_id):
         for s, d, config, task_id, k in self.cache:
@@ -53,9 +53,9 @@ class Optimization:
                         config = optimize.start_optimize(delta=delta)
                         save = True
                     else:
-                        self.cached += 1
-                        if self.cached % 10 == 0:
-                            print("read from cach times", self.cached)
+                        self.cached_number += 1
+                        if self.cached_number % 10 == 0:
+                            print("read from cached times", self.cached_number)
                     if config is not None and (config[0] < target.local_only_energy or not target.local_only_enabled):
                         validation.append({
                             "edge": k,
