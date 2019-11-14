@@ -4,6 +4,7 @@ import json
 from Device import Device
 import threading
 import copy
+from threading import Lock
 from Offloading_Mobihoc import *
 from Optimization import Optimization
 import time
@@ -23,6 +24,7 @@ class Helper(Optimization):
         self.number_of_opt = 0
         self.number_of_finished_opt = 0
         self.validation = []
+        self.lock = Lock()
 
     def connect(self):
         self.s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
