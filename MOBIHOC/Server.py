@@ -36,7 +36,7 @@ class Controller(threading.Thread, Optimization):
 
         self.number_of_opt = 0
         self.number_of_finished_opt = 0
-        self.validation = []
+        self.validation = None
 
     def reset_request_pool(self, number_of_user):
         self.request = [None for n in range(number_of_user)]
@@ -102,7 +102,6 @@ class Controller(threading.Thread, Optimization):
         }
 
     def worker(self, info):
-        # start = time.time()
         validation, target = self.opt(copy.deepcopy(info))
         if len(validation) > 0:
             validation.sort(key=lambda x: x["config"][0])
@@ -123,6 +122,7 @@ class Controller(threading.Thread, Optimization):
         self.finish[target.task_id] = 1
 
     def optimize_locally(self, info, doing):
+        self.validation = [[] for n in doing]
         for n in doing:
             # 为每个worker创建一个线程
             info["who"] = Device(info["user_cpu"][n], n, info["H"][n]

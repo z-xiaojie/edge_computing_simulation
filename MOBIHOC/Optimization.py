@@ -27,21 +27,24 @@ class Optimization:
                 return config
         return None
 
-    def energy_opt(self, info, target, k, delta):
+    def energy_opt(self, info, delta, k):
+        target = info["who"]
         optimize = Offloading(info, k)
         info["selection"][target.task_id] = k
         info["opt_delta"][target.task_id] = delta
         config = self.search_cache(info, target.task_id, k)
         save = False
         if config is None:
-            config = optimize.start_optimize(delta=delta, local_only_energy=info["local_only_energy"][target.task_id])
+            config = optimize.start_optimize(delta=delta,
+                                             local_only_energy=info["local_only_energy"][target.task_id])
             save = True
         else:
             print("read from cached times", target.task_id, "edge=", k, "delta=", delta)
         if config is not None and (
-                config[0] < info["local_only_energy"][target.task_id] or not info["local_only_enabled"][target.task_id]):
+                config[0] < info["local_only_energy"][target.task_id] or not info["local_only_enabled"][
+            target.task_id]):
             self.lock.acquire()
-            self.validation.append({
+            self.validation[target.task_id].append({
                 "edge": k,
                 "config": config
             })
@@ -81,11 +84,15 @@ class Optimization:
             else:
                 info["B"][target.task_id] = target.DAG.jobs[delta - 1].output_data
             for k in range(info["number_of_edge"]):
+                self.lock.acquire()
                 self.number_of_opt += 1
-                x = threading.Thread(target=self.energy_opt, args=(copy.deepcopy(info), target, k, delta))
+                self.lock.release()
+                x = threading.Thread(target=self.energy_opt, args=(copy.deepcopy(info), delta, k))
                 x.start()
-                # self.energy_opt(info, target, k, delta)
         while True:
             if self.number_of_finished_opt == self.number_of_opt:
                 break
-        return self.validation, target
+        # self.lock.acquire()
+        # print(target.task_id, self.validation[target.task_id])
+        # self.lock.release()
+        return self.validation[target.task_id], target
