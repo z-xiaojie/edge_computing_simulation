@@ -31,7 +31,7 @@ class Helper(Optimization):
         self.finish = [0 for n in range(number_of_user)]
 
     def worker(self, info):
-        validation, target = self.opt(copy.copy(info))
+        validation, target = self.opt(copy.deepcopy(info))
         if len(validation) > 0:
             validation.sort(key=lambda x: x["config"][0])
             if validation[0]["edge"] != info["selection"][target.task_id] \

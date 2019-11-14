@@ -97,7 +97,7 @@ class Controller(threading.Thread, Optimization):
 
     def worker(self, info):
         # start = time.time()
-        validation, target = self.opt(copy.copy(info))
+        validation, target = self.opt(copy.deepcopy(info))
         if len(validation) > 0:
             validation.sort(key=lambda x: x["config"][0])
             if validation[0]["edge"] != info["selection"][target.task_id] \
