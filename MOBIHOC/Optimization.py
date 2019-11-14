@@ -2,6 +2,7 @@ from Offloading_Mobihoc import Offloading
 import numpy as np
 import threading
 from threading import Lock
+import copy
 
 
 class Optimization:
@@ -79,8 +80,9 @@ class Optimization:
                 info["B"][target.task_id] = target.DAG.jobs[delta - 1].output_data
             for k in range(info["number_of_edge"]):
                 self.number_of_opt += 1
-                x = threading.Thread(target=self.energy_opt, args=(info, target, k, delta))
+                x = threading.Thread(target=self.energy_opt, args=(copy.deepcopy(info), target, k, delta))
                 x.start()
+                # self.energy_opt(info, target, k, delta)
         while True:
             if self.number_of_finished_opt == self.number_of_opt:
                 break
