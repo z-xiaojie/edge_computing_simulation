@@ -26,7 +26,7 @@ for i in range(iterations):
     t = 0
     #f = 1.25
     number_of_chs = np.array([random.randint(6, 10) for x in range(number_of_edge)])
-    cpu = np.array([random.uniform(3.5, 5.5) * math.pow(10, 9) for x in range(number_of_edge)])
+    cpu = np.array([random.uniform(3, 4.5) * math.pow(10, 9) for x in range(number_of_edge)])
     H = [[round(np.random.rayleigh(np.sqrt(2 / np.pi) * math.pow(10, -3)), 5) for y in range(number_of_edge)] for x in
          range(number_of_user)]
     d_cpu = np.array([random.uniform(1.5, 2.5) * math.pow(10, 9) for x in range(number_of_user)])
@@ -52,7 +52,7 @@ for i in range(iterations):
         hist[0][4][t] += it1
 
         it2, finish_hist2, bandwidth2, opt_delta2, selection2, finished2, energy2, local, improvement2 \
-            = test(1, False, channel_allocation=1, epsilon=epsilon, number_of_user=number_of_user, number_of_edge=number_of_edge
+            = test(0, True, channel_allocation=1, epsilon=epsilon, number_of_user=number_of_user, number_of_edge=number_of_edge
                                          ,player=copy.deepcopy(player))
         print(bandwidth2)
 
