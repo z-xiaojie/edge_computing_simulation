@@ -18,6 +18,7 @@ def test(x, full, channel_allocation=1, epsilon=0.001, number_of_user=5, number_
     hist = []
     finish_hist = []
     pre_energy = np.sum(ee_local)
+    local_sum = pre_energy
     finish_hist.append(np.sum(finished))
     hist.append(np.sum(pre_energy))
     ttt = 0
@@ -60,9 +61,20 @@ def test(x, full, channel_allocation=1, epsilon=0.001, number_of_user=5, number_
             finish_hist.append(np.sum(finished))
             hist.append(np.sum(energy))
         if changed:
+            opt_e_cpu = np.zeros(number_of_edge)
+            bandwidth = np.zeros(number_of_edge)
+            for n in range(number_of_user):
+                if player.users[n].config is not None:
+                    bandwidth[selection[n]] += player.users[n].config[4]
+                    opt_e_cpu[selection[n]] = round(player.users[n].config[2] / math.pow(10, 9), 4)
+            F = True
+            for k in range(number_of_edge):
+                if opt_e_cpu[k] > player.edges[k].freq or bandwidth[k] > player.edges[k].number_of_chs:
+                    F = False
+                    break
             for target in req:
                 n, validation, local = target["user"], target["validation"], target["local"]
-                print(t, round(np.sum(energy), 5), np.sum(finished), ">>>", n, ">>>", validation)
+                print(t, round(np.sum(energy), 5), "/", local_sum , np.sum(finished), F,  ">>>", n, ">>>", validation)
 
         if not changed:
             break

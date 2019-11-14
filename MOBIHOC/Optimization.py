@@ -56,7 +56,7 @@ class Optimization:
                         #self.cached_number += 1
                         #if self.cached_number % 10 == 0:
                         print("read from cached times", target.task_id, "edge=", k , "delta=",delta)
-                    if config is not None and (config[0] < target.local_only_energy or not target.local_only_enabled):
+                    if config is not None and (config[0] < info["local_only_energy"][target.task_id] or not target.local_only_enabled):
                         validation.append({
                             "edge": k,
                             "config": config
