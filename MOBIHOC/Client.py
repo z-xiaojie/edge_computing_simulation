@@ -105,8 +105,7 @@ class Helper(Optimization):
                 while not self.check_worker(self.doing):
                     # print("working....")
                     dd = 0
-                print(info["current_t"], "request finished in >>>>>>>>>>>>>>>>", time.time() - start
-                      , "cached", self.cached)
+                print(info["current_t"], "request finished in >>>>>>>>>>>>>>>>", time.time() - start)
                 for n in self.doing:
                     if self.request[n] is not None:
                         if self.request[n]["validation"] is not None:
