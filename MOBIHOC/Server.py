@@ -122,7 +122,7 @@ class Controller(threading.Thread, Optimization):
         self.finish[target.task_id] = 1
 
     def optimize_locally(self, info, doing):
-        self.validation = [[] for n in doing]
+        self.validation = [[] for n in range(info["number_of_user"])]
         for n in doing:
             # 为每个worker创建一个线程
             info["who"] = Device(info["user_cpu"][n], n, info["H"][n]

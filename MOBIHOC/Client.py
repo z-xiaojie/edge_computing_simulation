@@ -102,7 +102,7 @@ class Helper(Optimization):
                 if info["current_t"] == 0:
                     self.clean_cache()
                 self.reset_request_pool(info["number_of_user"])
-                self.validation = [[] for n in self.doing]
+                self.validation = [[] for n in range(info["number_of_user"])]
                 for n in self.doing:
                     info["who"] = Device(info["user_cpu"][n], n, info["H"][n]
                                          , transmission_power=info["P_max"][n], epsilon=info["stop_point"])
