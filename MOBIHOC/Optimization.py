@@ -84,4 +84,4 @@ class Optimization:
                         "edge": k,
                         "config": config
                     })
-        return validation, target, self.cached
+        return validation, target
