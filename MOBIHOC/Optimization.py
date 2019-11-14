@@ -50,7 +50,7 @@ class Optimization:
                     optimize = Offloading(info, k)
                     info["selection"][target.task_id] = k
                     info["opt_delta"][target.task_id] = delta
-                    config = None # self.search_cache(info, target.task_id, k)
+                    config = self.search_cache(info, target.task_id, k)
                     save = False
                     if config is None:
                         config = optimize.start_optimize(delta=delta, local_only_energy=info["local_only_energy"][target.task_id])

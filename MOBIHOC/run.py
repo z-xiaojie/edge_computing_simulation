@@ -108,7 +108,7 @@ def get_request(current_t, opt_delta, channel_allocation, just_updated, player, 
     not_tested = [n for n in range(player.number_of_user)]
     n = 0
     while len(not_tested) > 0:
-        n = random.choice(not_tested)
+        # n = random.choice(not_tested)
         #if n == just_updated:
             #continue
         if controller.request[n] is not None:
