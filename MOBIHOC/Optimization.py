@@ -54,7 +54,8 @@ class Optimization:
                         save = True
                     else:
                         self.cached += 1
-                        #print("read from cache: get user info", target.task_id, k, delta)
+                        if self.cached % 10 == 0:
+                            print("read from cach times", self.cached)
                     if config is not None and (config[0] < target.local_only_energy or not target.local_only_enabled):
                         validation.append({
                             "edge": k,
@@ -83,4 +84,4 @@ class Optimization:
                         "edge": k,
                         "config": config
                     })
-        return validation, target
+        return validation, target, self.cached
