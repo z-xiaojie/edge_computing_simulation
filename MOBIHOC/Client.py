@@ -9,6 +9,125 @@ from Offloading_Mobihoc import *
 from Optimization import Optimization
 import time
 import struct
+from multiprocessing import Process, Manager
+
+lock = Lock()
+
+
+def reset_request_pool(number_of_user):
+    request = [{
+                "user": None,
+                "validation": None,
+                "local": False
+            } for n in range(number_of_user)]
+    finish = [0 for n in range(number_of_user)]
+
+
+def search_cache(info, user_id, edge_id, cache):
+    for s, d, config, task_id, k in cache:
+        if task_id != user_id or k != edge_id:
+            continue
+        selected = []
+        delta = []
+        for n in range(len(info["selection"])):
+            if info["selection"][n] == edge_id:
+                selected.append(n)
+                delta.append(info["opt_delta"][n])
+        if np.array_equal(s, selected) and np.array_equal(delta, d):
+            return config
+    return None
+
+
+def energy_opt(info, delta, state):
+    target = info["who"]
+    info["Y_n"][target.task_id], info["X_n"][target.task_id], info["B"][target.task_id] = 0, 0, 0
+    for m in range(0, delta):
+        info["Y_n"][target.task_id] += target.DAG.jobs[m].computation
+    for m in range(delta, target.DAG.length):
+        info["X_n"][target.task_id] += target.DAG.jobs[m].computation
+    if delta == 0:
+        info["B"][target.task_id] = target.DAG.jobs[delta].input_data
+    else:
+        info["B"][target.task_id] = target.DAG.jobs[delta - 1].output_data
+    small = -1
+    for k in range(info["number_of_edge"]):
+        optimize = Offloading(info, k)
+        info["selection"][target.task_id] = k
+        info["opt_delta"][target.task_id] = delta
+        config = search_cache(info, target.task_id, k, state['cache'])
+        save = False
+        if config is None:
+            config = optimize.start_optimize(delta=delta,
+                                             local_only_energy=info["local_only_energy"][target.task_id])
+            save = True
+        else:
+            print("read from cached times", target.task_id, "edge=", k, "delta=", delta)
+            d = 1
+        if config is not None and (
+                config[0] < info["local_only_energy"][target.task_id] or not info["local_only_enabled"][target.task_id])\
+                and (small == -1 or small > config[0]):
+            lock.acquire()
+            small = config[0]
+            state["validation"][target.task_id].append({
+                "edge": k,
+                "config": config
+            })
+            # print("finish", state["validation"][target.task_id])
+            if save:
+                selected = []
+                partition_delta = []
+                for n in range(info["number_of_user"]):
+                    if info["selection"][n] == k:
+                        selected.append(n)
+                        partition_delta.append(info["opt_delta"][n])
+                state['cache'].append(
+                    (selected, partition_delta, config, target.task_id, k))
+            lock.release()
+    lock.acquire()
+    state["number_of_finished_opt"] += 1
+    lock.release()
+
+
+def worker(info, state):
+    target = info["who"]
+    feasible = [0]
+    if not info["full"]:
+        small_data = target.DAG.jobs[0].input_data
+        for delta in range(1, len(target.DAG.jobs) - 1):
+            if target.DAG.jobs[delta].input_data < small_data:
+                feasible.append(delta)
+                small_data = target.DAG.jobs[delta].input_data
+            else:
+                break
+    for delta in feasible:
+        state["number_of_opt"] += 1
+        energy_opt(copy.deepcopy(info), delta, state)
+        # x = threading.Thread(target=energy_opt, args=(copy.deepcopy(info), delta, target.task_id))
+        # x.start()
+    while True:
+        if state["number_of_finished_opt"] == state["number_of_opt"]:
+            break
+    lock.acquire()
+    if len(state["validation"][target.task_id]) > 0:
+        # state["validation"][target.task_id].sort(key=lambda x: x["config"][0])
+        # state["validation"][target.task_id][0]
+        if state["validation"][target.task_id][0]["edge"] != info["selection"][target.task_id] \
+                or state["validation"][target.task_id][0]["config"] != target.config:
+            state["request"][target.task_id] = {
+                "user": target.task_id,
+                "validation": state["validation"][target.task_id][0],
+                "local": False
+            }
+    else:
+        if info["selection"][target.task_id] != -1:
+            state["request"][target.task_id] = {
+                "user": target.task_id,
+                "validation": None,
+                "local": True
+            }
+    state['finish'][target.task_id] = 1
+    # print("finish", state["validation"][target.task_id])
+    lock.release()
 
 
 class Helper(Optimization):
@@ -32,33 +151,9 @@ class Helper(Optimization):
         self.request = None
         self.finish = None
 
-    def reset_request_pool(self, number_of_user):
-        self.request = [None for n in range(number_of_user)]
-        self.finish = [0 for n in range(number_of_user)]
-
-    def worker(self, info):
-        validation, target = self.opt(copy.deepcopy(info))
-        if len(validation) > 0:
-            validation.sort(key=lambda x: x["config"][0])
-            if validation[0]["edge"] != info["selection"][target.task_id] \
-                    or validation[0]["config"] != target.config:
-                self.request[target.task_id] = {
-                    "user": target.task_id,
-                    "validation": validation[0],
-                    "local": False
-                }
-        else:
-            if info["selection"][target.task_id] != -1:
-                self.request[target.task_id] = {
-                    "user": target.task_id,
-                    "validation": None,
-                    "local": True
-                }
-        self.finish[target.task_id] = 1
-
-    def check_worker(self, doing):
+    def check_worker(self, doing, state):
         for n in doing:
-            if self.finish[n] != 1:
+            if state['finish'][n] != 1:
                 return False
         return True
 
@@ -81,7 +176,30 @@ class Helper(Optimization):
             data.extend(packet)
         return data
 
+    def create_state(self, doing, info, cache):
+        # multiprocessing POST
+        manager = Manager()
+        state = manager.dict()
+        state['number_of_opt'] = 0
+        state['number_of_finished_opt'] = 0
+        state['cache'] = manager.list()
+        for item in cache:
+            state['cache'].append(item)
+        state['finish'] = manager.list()
+        state['request'] = manager.list()
+        state['validation'] = manager.list()
+        for n in range(info['number_of_user']):
+            if doing.__contains__(n):
+                state['validation'].append(manager.list())
+                state['request'].append(manager.list())
+            else:
+                state['validation'].append(None)
+                state['request'].append(None)
+            state['finish'].append(0)
+        return state
+
     def optimize(self):
+        global validation, finish
         message = "m: greeting from edge server, doing list " + str(self.doing)
         self.s.send(message.encode('ascii'))
         start = time.time()
@@ -101,29 +219,38 @@ class Helper(Optimization):
                 info = json.loads(str(data.decode('ascii')))
                 if info["current_t"] == 0:
                     self.clean_cache()
-                self.reset_request_pool(info["number_of_user"])
-                self.validation = [[] for n in range(info["number_of_user"])]
+                state = self.create_state(self.doing, info, self.cache)
+                processes = list()
                 for n in self.doing:
                     info["who"] = Device(info["user_cpu"][n], n, info["H"][n]
                                          , transmission_power=info["P_max"][n], epsilon=info["stop_point"])
                     info["who"].inital_DAG(n, info["tasks"][n], info["D_n"][n], info["D_n"][n])
                     info["who"].local_only_execution()
                     info["who"].config = info["configs"][n]
-                    x = threading.Thread(target=self.worker, args=(copy.deepcopy(info),))
+                    # x = threading.Thread(target=self.worker, args=(copy.deepcopy(info),))
+                    x = Process(target=worker, args=(copy.deepcopy(info), state))
                     x.start()
-                while not self.check_worker(self.doing):
-                    # print("working....")
+                    processes.append(x)
+                for process in processes:
+                    process.join()
+                while not self.check_worker(self.doing, state):
+                    print("finish", state['finish'])
                     dd = 0
                 print(info["current_t"], "request finished in >>>>>>>>>>>>>>>>", time.time() - start)
+                self.cache = copy.copy(list(state['cache']))
                 for n in self.doing:
-                    if self.request[n] is not None:
-                        if self.request[n]["validation"] is not None:
-                            print("update request for user", n, "=", self.request[n]["validation"]["config"])
+                    if state['request'][n] is not None:
+                        if len(state['request'][n]) == 0:
+                            state['request'][n] = None
+                            print("update request for user", n, "= None")
                         else:
-                            print("update request for user", n, "= local")
+                            if state['request'][n]["validation"] is not None:
+                                print("update request for user", n, "=", state['request'][n]["validation"]["config"])
+                            else:
+                                print("update request for user", n, "= local")
                     else:
                         print("update request for user", n, "= None")
-                self.s.send(json.dumps({"req": self.request, "doing": self.doing}).encode("utf-8"))
+                self.s.send(json.dumps({"req": list(state['request']), "doing": self.doing}).encode("utf-8"))
                 self.done = True
 
 

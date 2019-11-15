@@ -49,7 +49,8 @@ class Optimization:
                                                  local_only_energy=info["local_only_energy"][target.task_id])
                 save = True
             else:
-                print("read from cached times", target.task_id, "edge=", k, "delta=", delta)
+                #print("read from cached times", target.task_id, "edge=", k, "delta=", delta)
+                d = 1
             if config is not None and (
                     config[0] < info["local_only_energy"][target.task_id] or not info["local_only_enabled"][target.task_id]):
                 self.lock.acquire()

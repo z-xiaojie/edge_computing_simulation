@@ -63,6 +63,19 @@ def energy_update(player, selection, user_hist, save=True):
     return user_hist, energy, finished, transmission, computation, edge_computation
 
 
+def local_helper(id):
+    from Client import Helper
+    import socket
+    helper = Helper("192.168.1.162", 0, 7)
+    print("helper")
+    while True:
+        try:
+            helper.connect()
+            helper.optimize()
+        except socket.error:
+            print("no request, waiting...")
+
+
 def get_request(x, current_t, opt_delta, channel_allocation, just_updated, player, selection, full, epsilon):
     # reset_request_pool(player.number_of_user)
     start = time.time()
@@ -70,7 +83,7 @@ def get_request(x, current_t, opt_delta, channel_allocation, just_updated, playe
     controller.initial_info(player=player, selection=selection, opt_delta=opt_delta
                             , full=full, channel_allocation=channel_allocation, epsilon=epsilon)
     controller.reset_request_pool(player.number_of_user)
-    controller.optimize_locally(controller.info, [0, 1, 2, 3, 4, 5])
+    # controller.optimize_locally(controller.info, [0, 1, 2, 3, 4, 5, 6, 7])
     controller.run(12345)
     # controller.notify_opt()
     print("waiting...", controller.finish)
@@ -105,16 +118,19 @@ def get_request(x, current_t, opt_delta, channel_allocation, just_updated, playe
     print("request finished in >>>>>>>>>>>>>>>>", time.time() - start, selection, opt_delta)
     # print("request", controller.request)
 
-    not_tested = [n for n in range(player.number_of_user)]
+    avg_H = [[np.sum(player.users[n].H), n] for n in range(player.number_of_user)]
+    avg_H = sorted(avg_H, key=lambda x: x[0])
+    not_tested = [avg_H[n][1] for n in range(player.number_of_user)]
+    print("not_tested", not_tested)
     n = 0
-    while len(not_tested) > 0:
+    while len(not_tested) > n:
         if x == 1:
             n = random.choice(not_tested)
         #if n == just_updated:
             #continue
-        if controller.request[n] is not None:
-            return get_requests(controller.request, controller.request[n], selection)
+        if controller.request[not_tested[n]] is not None:
+            return get_requests(controller.request, controller.request[not_tested[n]], selection)
         else:
-            not_tested.remove(n)
+            # not_tested.remove(not_tested[n])
             n += 1
     return None

@@ -13,9 +13,8 @@ import threading
 from Server import Controller
 
 """
-[-1, -1, 0, 1, -1, -1, 0, 0, 0, 0, 1, 0, 0, 0, -1] p
+[0.10058]
 
-[-1 -1  0  2 -1 -1  1  2  0  1  0  2  1  2 -1] s
 adaptive= [0.37452] 0.36296 0.27956 0.34616
 full= [0.44593]
 local= [0.79815, 0.79815, 0.79815, 0.79815, 0.79815]
@@ -29,14 +28,14 @@ opt_delta1, opt_delta2 = None, None
 bandwidth1, bandwidth2 = None, None
 cpus = []
 for i in range(iterations):
-    number_of_user, number_of_edge, epsilon = 15, 3, 0.0005
+    number_of_user, number_of_edge, epsilon = 8, 3, 0.0005
     chs = 10
     t = 0
     #f = 1.25
-    number_of_chs = np.array([8, 6, 9]) #np.array([random.randint(6, 15) for x in range(number_of_edge)])
-    cpu = np.array([4.29 * math.pow(10, 9), 4.17 * math.pow(10, 9), 5.10 * math.pow(10, 9)]) #np.array([random.uniform(3.5, 5) * math.pow(10, 9) for x in range(number_of_edge)])
-    H = [[round(np.random.rayleigh(np.sqrt(2 / np.pi) * math.pow(10, -3)), 5) for y in range(number_of_edge)] for x in
-         range(number_of_user)]
+    number_of_chs = np.array([8, 6, 9]) # np.array([random.randint(6, 15) for x in range(number_of_edge)])
+    cpu = np.array([4.29 * math.pow(10, 9), 4.17 * math.pow(10, 9), 5.10 * math.pow(10, 9)]) # np.array([random.uniform(3.5, 5) * math.pow(10, 9) for x in range(number_of_edge)])
+    # H = [[round(np.random.rayleigh(np.sqrt(2 / np.pi) * math.pow(10, -3)), 5) for y in range(number_of_edge)] for x in
+    #     range(number_of_user)]
     H = [[0.00102, 0.00115, 0.00044], [0.00086, 0.00099, 0.00031], [0.00162, 0.00036, 0.0011],
          [0.00062, 0.00081, 0.00113], [0.00138, 0.00114, 0.00125], [0.00086, 0.0008, 0.00071],
          [0.00144, 0.00223, 0.00213], [0.00235, 0.00099, 0.00212], [0.00146, 0.00111, 0.00086],
