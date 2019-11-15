@@ -107,9 +107,9 @@ def worker(info, state):
         energy_opt(copy.deepcopy(info), delta, state)
         # x = threading.Thread(target=energy_opt, args=(copy.deepcopy(info), delta, target.task_id))
         # x.start()
-    while True:
-        if state["number_of_finished_opt"] == state["number_of_opt"]:
-            break
+    # while True:
+    #    if state["number_of_finished_opt"] == state["number_of_opt"]:
+    #        break
     lock.acquire()
     if len(state["validation"][target.task_id]) > 0:
         # state["validation"][target.task_id].sort(key=lambda x: x["config"][0])
