@@ -133,12 +133,12 @@ def worker(info, state):
 
 
 class Helper(Optimization):
-    def __init__(self, host, start, end):
+    def __init__(self, host, port, start, end):
         self.host = host
         start1 = int(start)
         end1 = int(end)
         self.doing = [n for n in range(start1, end1+1)]
-        self.port = 12345
+        self.port = port
         self.done = False
         self.cache = []
 
