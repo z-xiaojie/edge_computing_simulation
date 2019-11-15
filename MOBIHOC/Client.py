@@ -185,17 +185,16 @@ class Helper(Optimization):
         state['cache'] = manager.list()
         for item in cache:
             state['cache'].append(item)
-        state['finish'] = manager.Array('i', info['number_of_user'])
+        state['finish'] = manager.list([0 for n in range(info['number_of_user'])])
         state['request'] = manager.list()
         state['validation'] = manager.list()
         for n in range(info['number_of_user']):
             if doing.__contains__(n):
-                state['validation'].append(manager.list())
-                state['request'].append(manager.list())
+                state['validation'].append(manager.list([]))
+                state['request'].append(manager.list([]))
             else:
                 state['validation'].append(None)
                 state['request'].append(None)
-            state['finish'][n] = 0
         return state
 
     def optimize(self):
@@ -220,7 +219,7 @@ class Helper(Optimization):
                 if info["current_t"] == 0:
                     self.clean_cache()
                 state = self.create_state(self.doing, info, self.cache)
-                print("state", state)
+                print("state", state['finish'])
                 processes = list()
                 for n in self.doing:
                     info["who"] = Device(info["user_cpu"][n], n, info["H"][n]
