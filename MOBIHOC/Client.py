@@ -215,7 +215,7 @@ class Helper(Optimization):
                 self.s.close()
                 return
             elif not self.done:
-                print("start to optimizing...")
+                print("start to optimizing...", self.doing, info["number_of_user"])
                 info = json.loads(str(data.decode('ascii')))
                 if info["current_t"] == 0:
                     self.clean_cache()
