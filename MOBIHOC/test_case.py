@@ -79,7 +79,7 @@ def test(x, full, channel_allocation=1, epsilon=0.001, number_of_user=5, number_
         if not changed:
             break
 
-        if t > 50:
+        if t > 45 and F:
             break
 
     opt_cpu = []
