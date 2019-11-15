@@ -15,8 +15,6 @@ from Server import Controller
 """
 [0.10058]
 
-adaptive= [0.37452] 0.36296 0.27956 0.34616
-full= [0.44593]
 local= [0.79815, 0.79815, 0.79815, 0.79815, 0.79815]
 """
 
@@ -64,10 +62,9 @@ for i in range(iterations):
         hist[0][3][t] += local
         hist[0][4][t] += it1
 
-        break
 
         it2, finish_hist2, bandwidth2, opt_delta2, selection2, finished2, energy2, local, improvement2 \
-            = test(0, True, channel_allocation=1, epsilon=epsilon, number_of_user=number_of_user, number_of_edge=number_of_edge
+            = test(1, False, channel_allocation=1, epsilon=epsilon, number_of_user=number_of_user, number_of_edge=number_of_edge
                                          ,player=copy.deepcopy(player))
         print(bandwidth2)
 

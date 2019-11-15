@@ -117,20 +117,26 @@ def get_request(x, current_t, opt_delta, channel_allocation, just_updated, playe
 
     print("request finished in >>>>>>>>>>>>>>>>", time.time() - start, selection, opt_delta)
     # print("request", controller.request)
-
-    avg_H = [[np.sum(player.users[n].H), n] for n in range(player.number_of_user)]
-    avg_H = sorted(avg_H, key=lambda x: x[0])
-    not_tested = [avg_H[n][1] for n in range(player.number_of_user)]
-    print("not_tested", not_tested)
-    n = 0
-    while len(not_tested) > n:
-        if x == 1:
+    if x == 0:
+        # ordered based on channel gain
+        avg_H = [[np.sum(player.users[n].H), n] for n in range(player.number_of_user)]
+        avg_H = sorted(avg_H, key=lambda x: x[0])
+        not_tested = [avg_H[n][1] for n in range(player.number_of_user)]
+        print("not_tested", not_tested)
+        n = 0
+        while len(not_tested) > n:
+            if controller.request[not_tested[n]] is not None:
+                return get_requests(controller.request, controller.request[not_tested[n]], selection)
+            else:
+                n += 1
+        return None
+    else:
+        not_tested = [n for n in range(player.number_of_user)]
+        print("not_tested", not_tested)
+        while len(not_tested) > 0:
             n = random.choice(not_tested)
-        #if n == just_updated:
-            #continue
-        if controller.request[not_tested[n]] is not None:
-            return get_requests(controller.request, controller.request[not_tested[n]], selection)
-        else:
-            # not_tested.remove(not_tested[n])
-            n += 1
-    return None
+            if controller.request[n] is not None:
+                return get_requests(controller.request, controller.request[n], selection)
+            else:
+                not_tested.remove(n)
+        return None
