@@ -195,9 +195,7 @@ class Helper(Optimization):
             else:
                 state['validation'].append(None)
                 state['request'].append(None)
-            state['finish'].append(1)
-            print("adding")
-            print("finish", state['finish'])
+            state['finish'].append(0)
         return state
 
     def optimize(self):
@@ -222,7 +220,7 @@ class Helper(Optimization):
                 if info["current_t"] == 0:
                     self.clean_cache()
                 state = self.create_state(self.doing, info, self.cache)
-                print(state['finish'])
+                print("state", state)
                 processes = list()
                 for n in self.doing:
                     info["who"] = Device(info["user_cpu"][n], n, info["H"][n]
