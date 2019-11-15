@@ -85,7 +85,7 @@ def energy_opt(info, delta, state):
             lock.release()
     lock.acquire()
     state["number_of_finished_opt"] += 1
-    print("validation", state["validation"])
+    # print("validation", state["validation"])
     lock.release()
 
 
@@ -190,8 +190,8 @@ class Helper(Optimization):
         state['validation'] = manager.list()
         for n in range(info['number_of_user']):
             if doing.__contains__(n):
-                state['request'].append([])
-                state['validation'].append([])
+                state['request'].append(manager.list())
+                state['validation'].append(manager.list())
             else:
                 state['request'].append(None)
                 state['validation'].append(None)
