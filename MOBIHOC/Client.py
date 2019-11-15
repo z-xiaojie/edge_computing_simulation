@@ -85,6 +85,7 @@ def energy_opt(info, delta, state):
             lock.release()
     lock.acquire()
     state["number_of_finished_opt"] += 1
+    print("validation", state["validation"][target.task_id])
     lock.release()
 
 
