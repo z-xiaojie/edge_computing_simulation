@@ -125,10 +125,7 @@ def worker(info, state):
                 "validation": None,
                 "local": True
             }
-    f = state['finish']
-    f[target.task_id] = 1
-    state['finish'] = f
-    print("finish", state['finish'])
+    state['finish'][target.task_id] = 1
     lock.release()
 
 
@@ -214,7 +211,6 @@ class Helper(Optimization):
                 if info["current_t"] == 0:
                     self.clean_cache()
                 state = self.create_state(self.doing, info, self.cache)
-                print("state", state['request'])
                 processes = list()
                 for n in self.doing:
                     info["who"] = Device(info["user_cpu"][n], n, info["H"][n]
