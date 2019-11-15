@@ -126,7 +126,7 @@ def worker(info, state):
                 "local": True
             }
     state['finish'][target.task_id] = 1
-    print("finish", state["validation"][target.task_id])
+    print("finish", state['finish'])
     lock.release()
 
 
@@ -192,9 +192,6 @@ class Helper(Optimization):
             if doing.__contains__(n):
                 state['validation'].append(manager.list([]))
                 state['request'].append(manager.list([]))
-            else:
-                state['validation'].append(None)
-                state['request'].append(None)
         return state
 
     def optimize(self):
@@ -219,7 +216,7 @@ class Helper(Optimization):
                 if info["current_t"] == 0:
                     self.clean_cache()
                 state = self.create_state(self.doing, info, self.cache)
-                # print("state", state['finish'])
+                print("state", state['request'])
                 processes = list()
                 for n in self.doing:
                     info["who"] = Device(info["user_cpu"][n], n, info["H"][n]
