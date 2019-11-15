@@ -196,6 +196,8 @@ class Helper(Optimization):
                 state['validation'].append(None)
                 state['request'].append(None)
             state['finish'].append(0)
+            print("adding")
+            print("finish", state['finish'])
         return state
 
     def optimize(self):
