@@ -28,7 +28,7 @@ opt_delta1, opt_delta2 = None, None
 bandwidth1, bandwidth2 = None, None
 cpus = []
 for i in range(iterations):
-    number_of_user, number_of_edge, epsilon = 8, 3, 0.0005
+    number_of_user, number_of_edge, epsilon = 10, 3, 0.0005
     chs = 10
     t = 0
     #f = 1.25
