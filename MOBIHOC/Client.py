@@ -181,11 +181,11 @@ class Helper(Optimization):
         manager = Manager()
         state = manager.dict()
         state['number_of_opt'] = 0
-        state['number_of_finished_opt'] = 111
+        state['number_of_finished_opt'] = 0
         state['cache'] = manager.list()
         for item in cache:
             state['cache'].append(item)
-        state['finish'] = manager.list()
+        state['finish'] = manager.Array('i', info['number_of_user'])
         state['request'] = manager.list()
         state['validation'] = manager.list()
         for n in range(info['number_of_user']):
@@ -195,7 +195,7 @@ class Helper(Optimization):
             else:
                 state['validation'].append(None)
                 state['request'].append(None)
-            state['finish'].append(0)
+            state['finish'][n] = 0
         return state
 
     def optimize(self):
