@@ -186,12 +186,8 @@ class Helper(Optimization):
         for item in cache:
             state['cache'].append(item)
         state['finish'] = manager.list([0 for n in range(info['number_of_user'])])
-        state['request'] = manager.list()
-        state['validation'] = manager.list()
-        for n in range(info['number_of_user']):
-            if doing.__contains__(n):
-                state['validation'].append(manager.list([]))
-                state['request'].append(manager.list([]))
+        state['request'] = manager.list([[] for n in range(info['number_of_user'])])
+        state['validation'] = manager.list([[] for n in range(info['number_of_user'])])
         return state
 
     def optimize(self):
