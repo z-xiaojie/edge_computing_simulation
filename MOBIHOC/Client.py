@@ -138,7 +138,7 @@ class Helper(Optimization):
         start1 = int(start)
         end1 = int(end)
         self.doing = [n for n in range(start1, end1+1)]
-        self.port = port
+        self.port = int(port)
         self.done = False
         self.cache = []
 
