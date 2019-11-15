@@ -126,7 +126,7 @@ def worker(info, state):
                 "local": True
             }
     state['finish'][target.task_id] = 1
-    print("finish", state['finish'])
+    print("finish", state['finish'][target.task_id])
     lock.release()
 
 
