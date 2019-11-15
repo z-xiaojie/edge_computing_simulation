@@ -181,7 +181,7 @@ class Helper(Optimization):
         manager = Manager()
         state = manager.dict()
         state['number_of_opt'] = 0
-        state['number_of_finished_opt'] = 0
+        state['number_of_finished_opt'] = 111
         state['cache'] = manager.list()
         for item in cache:
             state['cache'].append(item)
