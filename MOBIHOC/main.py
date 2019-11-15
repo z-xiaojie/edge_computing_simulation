@@ -13,9 +13,11 @@ import threading
 from Server import Controller
 
 """
-[0.10058]
 
-local= [0.79815, 0.79815, 0.79815, 0.79815, 0.79815]
+adaptive= [0.35051]
+full= [0.28442]
+local= [0.79815]
+
 """
 
 iterations = 1
@@ -30,15 +32,19 @@ for i in range(iterations):
     chs = 10
     t = 0
     #f = 1.25
-    number_of_chs = np.array([8, 6, 9]) # np.array([random.randint(6, 15) for x in range(number_of_edge)])
-    cpu = np.array([4.29 * math.pow(10, 9), 4.17 * math.pow(10, 9), 5.10 * math.pow(10, 9)]) # np.array([random.uniform(3.5, 5) * math.pow(10, 9) for x in range(number_of_edge)])
+    number_of_chs = np.array([8, 6, 9])
+    # number_of_chs = np.array([random.randint(6, 12) for x in range(number_of_edge)])
+    cpu = np.array([4.29 * math.pow(10, 9), 4.17 * math.pow(10, 9), 5.10 * math.pow(10, 9)])
+    # cpu = np.array([random.uniform(3.5, 5.5) * math.pow(10, 9) for x in range(number_of_edge)])
     # H = [[round(np.random.rayleigh(np.sqrt(2 / np.pi) * math.pow(10, -3)), 5) for y in range(number_of_edge)] for x in
-    #     range(number_of_user)]
+    #      range(number_of_user)]
+
     H = [[0.00102, 0.00115, 0.00044], [0.00086, 0.00099, 0.00031], [0.00162, 0.00036, 0.0011],
          [0.00062, 0.00081, 0.00113], [0.00138, 0.00114, 0.00125], [0.00086, 0.0008, 0.00071],
          [0.00144, 0.00223, 0.00213], [0.00235, 0.00099, 0.00212], [0.00146, 0.00111, 0.00086],
          [0.00064, 0.00059, 0.00059], [0.00156, 0.00172, 0.00117], [0.00108, 0.00065, 0.00155],
          [0.0009, 0.00225, 0.00123], [0.00075, 0.00065, 0.00086], [0.00036, 3e-05, 0.00093]]
+
     d_cpu = np.array([random.uniform(1.5, 2.5) * math.pow(10, 9) for x in range(number_of_user)])
     player = Role(number_of_edge=number_of_edge, number_of_user=number_of_user, epsilon=epsilon,
                   number_of_chs=number_of_chs, cpu=cpu, d_cpu=d_cpu, H=H)
@@ -49,7 +55,7 @@ for i in range(iterations):
     while t < I:
         #number_of_chs = np.array([random.randint(16, 24) for x in range(number_of_edge)])
         for k in range(number_of_edge):
-            player.edges[k].freq = cpu[k]
+            player.edges[k].freq = cpu[k] + 0.5 * math.pow(10, 9)
             cpu[k] += 0.5 * math.pow(10, 9)
         it1, finish_hist1, bandwidth1, opt_delta1, selection1, finished1, energy1, local, improvement1 \
             = test(0, False, channel_allocation=1, epsilon=epsilon, number_of_user=number_of_user, number_of_edge=number_of_edge
