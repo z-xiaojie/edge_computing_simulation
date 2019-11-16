@@ -96,6 +96,8 @@ def energy_opt(info, delta, state):
             lock.release()
     lock.acquire()
     if small_config is not None:
+        if target.task_id == 9:
+            print("final small", small_config)
         state["validation"][target.task_id].append(small_config)
     state["number_of_finished_opt"] += 1
     # print("validation", state["validation"])
