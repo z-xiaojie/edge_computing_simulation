@@ -86,7 +86,7 @@ def get_request(x, current_t, opt_delta, channel_allocation, just_updated, playe
     # controller.optimize_locally(controller.info, [0, 1, 2, 3, 4, 5, 6, 7])
     controller.run(8080)
     # controller.notify_opt()
-    print("waiting...", controller.finish)
+    # print("waiting...", controller.finish)
     while not controller.check_worker([n for n in range(player.number_of_user)]):
         d = 1
 
@@ -96,29 +96,49 @@ def get_request(x, current_t, opt_delta, channel_allocation, just_updated, playe
             opt_delta.append(player.users[n].config[5])
         else:
             opt_delta.append(-1)
-    print("request finished in >>>>>>>>>>>>>>>>", time.time() - start, selection, opt_delta)
+    # print("request finished in >>>>>>>>>>>>>>>>", time.time() - start, selection, opt_delta)
 
     # print("request", controller.request)
     if x == 0:
         # ordered based on channel gain
         avg_H = []
         for n in range(player.number_of_user):
-            if controller.request[n] is not None:
-                avg_H.append([0, n])
+            if controller.request[n] is None:
+                avg_H.append([0., n])
                 continue
             if controller.request[n] is not None and controller.request[n]['validation'] is not None:
                 ip = player.users[n].local_only_energy - controller.request[n]['validation']['config'][0]
+                avg_H.append([ip, n])
             else:
-                if player.users[n].config is None:
-                    ip = 0
-                else:
-                    ip = player.users[n].config[0] - player.users[n].local_only_energy
-            avg_H.append([ip, n])
+                avg_H.append([0., n])
         avg_H = sorted(avg_H, key=lambda x:x[0], reverse=True)
+        not_tested = [avg_H[n][1] for n in range(player.number_of_user)]
+        # print("not_tested", not_tested)
+        n = 0
+        while len(not_tested) > n:
+            if controller.request[not_tested[n]] is not None:
+                return [controller.request[not_tested[n]]]
+                # get_requests(controller.request, controller.request[not_tested[n]], selection)
+            else:
+                n += 1
+        return None
+    else:
+        not_tested = [n for n in range(player.number_of_user)]
+        # print("not_tested", not_tested)
+        # n = 0
+        while len(not_tested) > 0:
+            n = random.choice(not_tested)
+            if controller.request[n] is not None:
+                # [controller.request[n]]
+                return get_requests(controller.request, controller.request[n], selection)
+            else:
+                not_tested.remove(n)
+                # n += 1
+        return None
 
-        """
-        req = [None for k in range(player.number_of_edge)]
-        h_k = [0 for k in range(player.number_of_edge)]
+"""
+req = [None for k in range(player.number_of_edge)]
+        h_k = [1 for k in range(player.number_of_edge)]
         for n in range(player.number_of_user):
             if controller.request[n] is not None and controller.request[n]['validation'] is not None:
                 k = controller.request[n]['validation']["edge"]
@@ -135,24 +155,4 @@ def get_request(x, current_t, opt_delta, channel_allocation, just_updated, playe
         for item in controller.request:
             if item is not None and item["local"]:
                 return [item]
-        """
-
-        not_tested = [avg_H[n][1] for n in range(player.number_of_user)]
-        print("not_tested", not_tested)
-        n = 0
-        while len(not_tested) > n:
-            if controller.request[not_tested[n]] is not None:
-                return [controller.request[not_tested[n]]] # get_requests(controller.request, controller.request[not_tested[n]], selection)
-            else:
-                n += 1
-        return None
-    else:
-        not_tested = [n for n in range(player.number_of_user)]
-        print("not_tested", not_tested)
-        while len(not_tested) > 0:
-            n = random.choice(not_tested)
-            if controller.request[n] is not None:
-                return controller.request[n] #get_requests(controller.request, controller.request[n], selection)
-            else:
-                not_tested.remove(n)
-        return None
+"""
