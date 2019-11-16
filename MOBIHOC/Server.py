@@ -91,7 +91,7 @@ class Controller(threading.Thread, Optimization):
             "P_max": P_max,
             "B": B,
             "H": H,
-            "W": 1 * math.pow(10, 6),
+            "W": 2 * math.pow(10, 6),
             "who": None,
             "full": self.full,
             "default_channel": 1,
