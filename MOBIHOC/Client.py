@@ -237,7 +237,7 @@ class Helper(Optimization):
                 for process in processes:
                     process.join()
                 while not self.check_worker(self.doing, state):
-                    print("finish", state['finish'])
+                    # print("finish", state['finish'])
                     dd = 0
                 print(info["current_t"], "request finished in >>>>>>>>>>>>>>>>", time.time() - start)
                 self.cache = copy.copy(list(state['cache']))
