@@ -49,7 +49,7 @@ def energy_opt(info, delta, state):
         info["B"][target.task_id] = target.DAG.jobs[delta].input_data
     else:
         info["B"][target.task_id] = target.DAG.jobs[delta - 1].output_data
-    small = -1
+    small_config = None
     for k in range(info["number_of_edge"]):
         optimize = Offloading(info, k)
         info["selection"][target.task_id] = k
@@ -68,13 +68,18 @@ def energy_opt(info, delta, state):
         print("user", target.task_id, "delta", delta, ">>>>>>>>", config)
         if config is not None and (
                 config[0] < info["local_only_energy"][target.task_id] or not info["local_only_enabled"][target.task_id])\
-                and (small == -1 or small > config[0]):
-            lock.acquire()
-            # small = config[0]
+                and (small_config is None or small_config["config"][0] > config[0]):
+            small_config = {
+                "edge": k,
+                "config": config
+            }
+            """
             state["validation"][target.task_id].append({
                 "edge": k,
                 "config": config
             })
+            """
+            lock.acquire()
             print("finish", state["validation"][target.task_id])
             if save:
                 selected = []
@@ -87,6 +92,8 @@ def energy_opt(info, delta, state):
                     (selected, partition_delta, config, target.task_id, k))
             lock.release()
     lock.acquire()
+    if small_config is not None:
+        state["validation"][target.task_id].append(small_config)
     state["number_of_finished_opt"] += 1
     # print("validation", state["validation"])
     lock.release()
