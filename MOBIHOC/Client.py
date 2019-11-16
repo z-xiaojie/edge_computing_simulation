@@ -64,9 +64,6 @@ def energy_opt(info, delta, state, small_config):
         else:
             print("read from cached times", target.task_id, "edge=", k, "delta=", delta)
             d = 1
-        if target.task_id == 9:
-            print("user", target.task_id, "delta", delta, ">>>>>>>>", config)
-            print("current small", small_config)
         if config is not None and (
                 config[0] < info["local_only_energy"][target.task_id] or not info["local_only_enabled"][target.task_id])\
                 and (small_config is None or small_config["config"][0] > config[0]):
@@ -81,8 +78,7 @@ def energy_opt(info, delta, state, small_config):
             })
             """
             lock.acquire()
-            if target.task_id == 9:
-                print("current small", small_config)
+            print("user", target.task_id, "delta", delta, ">>>>>>>>", small_config)
             if save:
                 selected = []
                 partition_delta = []
