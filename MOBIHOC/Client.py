@@ -38,7 +38,7 @@ def search_cache(info, user_id, edge_id, cache):
     return None
 
 
-def energy_opt(info, delta, state):
+def energy_opt(info, delta, state, small_config):
     target = info["who"]
     info["Y_n"][target.task_id], info["X_n"][target.task_id], info["B"][target.task_id] = 0, 0, 0
     for m in range(0, delta):
@@ -49,7 +49,6 @@ def energy_opt(info, delta, state):
         info["B"][target.task_id] = target.DAG.jobs[delta].input_data
     else:
         info["B"][target.task_id] = target.DAG.jobs[delta - 1].output_data
-    small_config = None
     for k in range(info["number_of_edge"]):
         optimize = Offloading(info, k)
         info["selection"][target.task_id] = k
@@ -95,13 +94,10 @@ def energy_opt(info, delta, state):
                     (selected, partition_delta, config, target.task_id, k))
             lock.release()
     lock.acquire()
-    if small_config is not None:
-        if target.task_id == 9:
-            print("final small", small_config)
-        state["validation"][target.task_id].append(small_config)
     state["number_of_finished_opt"] += 1
     # print("validation", state["validation"])
     lock.release()
+    return small_config
 
 
 def worker(info, state):
@@ -116,19 +112,18 @@ def worker(info, state):
             else:
                 break
     print(feasible)
+    small_config = None
     for delta in feasible:
         state["number_of_opt"] += 1
-        energy_opt(copy.deepcopy(info), delta, state)
+        small_config = energy_opt(copy.deepcopy(info), delta, state, small_config)
         # x = threading.Thread(target=energy_opt, args=(copy.deepcopy(info), delta, target.task_id))
         # x.start()
-    # while True:
-    #    if state["number_of_finished_opt"] == state["number_of_opt"]:
-    #        break
     lock.acquire()
+    if small_config is not None:
+        state["validation"][target.task_id].append(small_config)
     if len(state["validation"][target.task_id]) > 0:
         # state["validation"][target.task_id].sort(key=lambda x: x["config"][0])
         # print(state["validation"][target.task_id])
-        # state["validation"][target.task_id][0]
         if state["validation"][target.task_id][0]["edge"] != info["selection"][target.task_id] \
                 or state["validation"][target.task_id][0]["config"] != target.config:
             state["request"][target.task_id] = {
