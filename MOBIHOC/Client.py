@@ -74,7 +74,7 @@ def energy_opt(info, delta, state):
                 "edge": k,
                 "config": config
             })
-            # print("finish", state["validation"][target.task_id])
+            print("finish", state["validation"][target.task_id])
             if save:
                 selected = []
                 partition_delta = []
