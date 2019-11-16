@@ -102,6 +102,7 @@ def worker(info, state):
                 small_data = target.DAG.jobs[delta].input_data
             else:
                 break
+    print(feasible)
     for delta in feasible:
         state["number_of_opt"] += 1
         energy_opt(copy.deepcopy(info), delta, state)
