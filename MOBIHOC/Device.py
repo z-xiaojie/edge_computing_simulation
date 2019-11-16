@@ -16,7 +16,7 @@ class Device:
         # local information
         self.k = math.pow(10, -28)
         self.N_0 = math.pow(10, -9)
-        self.W = 2 * math.pow(10, 6)
+        self.W = 1 * math.pow(10, 6)
 
         self.H = H
         self.preference = None

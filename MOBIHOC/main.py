@@ -51,7 +51,7 @@ for i in range(iterations):
             cpu[k] += 1.5 * math.pow(10, 9)
             # number_of_chs[k] += 5
         it1, finish_hist1, bandwidth1, opt_delta1, selection1, finished1, energy1, local1, improvement1, local, remote, local_to_remote \
-            = test(i, t, 1, False, channel_allocation=1, epsilon=epsilon, number_of_user=number_of_user, number_of_edge=number_of_edge
+            = test(i, t, 0, False, channel_allocation=1, epsilon=epsilon, number_of_user=number_of_user, number_of_edge=number_of_edge
                                       ,player=copy.deepcopy(player))
         print(bandwidth1)
 
@@ -63,6 +63,9 @@ for i in range(iterations):
         hist[0][5][t] += local
         hist[0][6][t] += remote
         hist[0][7][t] += local_to_remote
+
+        t = t + 1
+        continue
 
         it2, finish_hist2, bandwidth2, opt_delta2, selection2, finished2, energy2, local2, improvement2, local, remote, local_to_remote \
             = test(i, t, 1, True, channel_allocation=1, epsilon=epsilon, number_of_user=number_of_user, number_of_edge=number_of_edge
