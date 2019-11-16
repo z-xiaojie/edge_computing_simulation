@@ -65,7 +65,9 @@ def energy_opt(info, delta, state):
         else:
             print("read from cached times", target.task_id, "edge=", k, "delta=", delta)
             d = 1
-        print("user", target.task_id, "delta", delta, ">>>>>>>>", config)
+        if target.task_id == 9:
+            print("user", target.task_id, "delta", delta, ">>>>>>>>", config)
+            print("current small", small_config)
         if config is not None and (
                 config[0] < info["local_only_energy"][target.task_id] or not info["local_only_enabled"][target.task_id])\
                 and (small_config is None or small_config["config"][0] > config[0]):
