@@ -82,7 +82,8 @@ def energy_opt(info, delta, state):
             })
             """
             lock.acquire()
-            print("finish", state["validation"][target.task_id])
+            if target.task_id == 9:
+                print("current small", small_config)
             if save:
                 selected = []
                 partition_delta = []
