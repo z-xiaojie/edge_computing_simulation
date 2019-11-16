@@ -55,7 +55,7 @@ def energy_opt(info, delta, state):
         info["selection"][target.task_id] = k
         info["opt_delta"][target.task_id] = delta
         lock.acquire()
-        config = search_cache(info, target.task_id, k, state['cache'])
+        config = None # search_cache(info, target.task_id, k, state['cache'])
         lock.release()
         save = False
         if config is None:
