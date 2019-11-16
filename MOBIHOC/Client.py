@@ -71,7 +71,7 @@ def energy_opt(info, delta, state):
                 and (small_config is None or small_config["config"][0] > config[0]):
             small_config = {
                 "edge": k,
-                "config": config
+                "config": copy.copy(config)
             }
             """
             state["validation"][target.task_id].append({
