@@ -31,7 +31,7 @@ for i in range(iterations):
     t = 0
     #f = 1.25
     # number_of_chs = np.array([60, 60, 60])
-    number_of_chs = np.array([random.randint(80, 80) for x in range(number_of_edge)])
+    number_of_chs = np.array([random.randint(30, 30) for x in range(number_of_edge)])
     # cpu = np.array([4.54 * math.pow(10, 9), 4.5 * math.pow(10, 9), 5.26 * math.pow(10, 9)])
     cpu = np.array([random.uniform(6, 9) * math.pow(10, 9) for x in range(number_of_edge)])
     H = [[round(np.random.rayleigh(np.sqrt(2 / np.pi) * math.pow(10, -3)), 5) for y in range(number_of_edge)] for x in range(number_of_user)]

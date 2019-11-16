@@ -49,13 +49,13 @@ def energy_opt(info, delta, state):
         info["B"][target.task_id] = target.DAG.jobs[delta].input_data
     else:
         info["B"][target.task_id] = target.DAG.jobs[delta - 1].output_data
-    small = -1
+    # small = -1
     for k in range(info["number_of_edge"]):
         optimize = Offloading(info, k)
         info["selection"][target.task_id] = k
         info["opt_delta"][target.task_id] = delta
         lock.acquire()
-        config = None # search_cache(info, target.task_id, k, state['cache'])
+        config = search_cache(info, target.task_id, k, state['cache'])
         lock.release()
         save = False
         if config is None:
@@ -66,10 +66,10 @@ def energy_opt(info, delta, state):
             print("read from cached times", target.task_id, "edge=", k, "delta=", delta)
             d = 1
         if config is not None and (
-                config[0] < info["local_only_energy"][target.task_id] or not info["local_only_enabled"][target.task_id])\
-                and (small == -1 or small > config[0]):
+                config[0] < info["local_only_energy"][target.task_id] or not info["local_only_enabled"][target.task_id]):
+                #and (small == -1 or small > config[0]):
             lock.acquire()
-            small = config[0]
+            # small = config[0]
             state["validation"][target.task_id].append({
                 "edge": k,
                 "config": config
@@ -113,7 +113,8 @@ def worker(info, state):
     #        break
     lock.acquire()
     if len(state["validation"][target.task_id]) > 0:
-        # state["validation"][target.task_id].sort(key=lambda x: x["config"][0])
+        state["validation"][target.task_id].sort(key=lambda x: x["config"][0])
+        print(state["validation"][target.task_id])
         # state["validation"][target.task_id][0]
         if state["validation"][target.task_id][0]["edge"] != info["selection"][target.task_id] \
                 or state["validation"][target.task_id][0]["config"] != target.config:
