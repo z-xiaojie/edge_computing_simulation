@@ -18,8 +18,8 @@ adaptive= [0.13594, 0.0795, 0.06432]
 
 """
 
-iterations = 6
-I = 3
+iterations = 10
+I = 5
 hist = [[np.zeros(I) for i in range(20)] for j in range(3)]
 selection1, selection2, selection3 = None, None, None
 opt_delta1, opt_delta2 = None, None
@@ -48,8 +48,8 @@ for i in range(iterations):
         for k in range(number_of_edge):
             player.edges[k].freq = cpu[k]
             player.edges[k].number_of_chs = number_of_chs[k]
-            cpu[k] += 1.5 * math.pow(10, 9)
-            number_of_chs[k] += 5
+            cpu[k] += 1 * math.pow(10, 9)
+            number_of_chs[k] += 3
         it1, finish_hist1, bandwidth1, opt_delta1, selection1, finished1, energy1, local1, improvement1, local, remote, local_to_remote \
             = test(i, t, 0, False, channel_allocation=1, epsilon=epsilon, number_of_user=number_of_user, number_of_edge=number_of_edge
                                       ,player=copy.deepcopy(player))
