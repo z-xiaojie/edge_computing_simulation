@@ -111,7 +111,7 @@ def test(I, T, x, full, channel_allocation=1, epsilon=0.001, number_of_user=5, n
             opt_cpu.append(0)
             bandwidth.append(0)
             opt_e_cpu.append(0)
-
+    """
     print(">>>>>>>>>>>>>>>> TIME >>>>>>>>>>>>>>>>>>")
     print("adjusted local power", opt_power)
     print("adjusted local   CPU", opt_cpu)
@@ -131,16 +131,15 @@ def test(I, T, x, full, channel_allocation=1, epsilon=0.001, number_of_user=5, n
           [round(player.users[n].local/math.pow(10, 9), 5) for n in range(player.number_of_user)])
     print("remote computation",
           [round(player.users[n].remote/math.pow(10, 9), 5) for n in range(player.number_of_user)])
+    """
 
-    """
+    ip = 0
     for n in range(number_of_user):
-        plt.plot(user_hist[n], label="user"+str(n+1))
-        print("u"+str(n)+"=", user_hist[n])
-    """
+         ip += 1 - energy[n]/ee_local[n]
 
     # print("all=", list(hist))
     # print("total computation", [round(player.users[n].total_computation, 4) for n in range(number_of_user)])
-    print("finish time", [round((transmission[n] + computation[n] + edge_computation[n] - player.users[n].DAG.D/1000), 5) for n in range(player.number_of_user)])
+    # print("finish time", [round((transmission[n] + computation[n] + edge_computation[n] - player.users[n].DAG.D/1000), 5) for n in range(player.number_of_user)])
 
     return t, finish_hist, bandwidth, opt_delta, selection, np.sum(finished)/number_of_user, round(np.sum(energy), 5), round(np.sum(ee_local), 5)\
-        , 1 - round(np.sum(energy), 5) / round(np.sum(ee_local), 5), round(local, 5), round(remote, 5), round(local_to_remote, 5)
+        , round(ip/number_of_user, 5), round(local, 5), round(remote, 5), round(local_to_remote, 5)

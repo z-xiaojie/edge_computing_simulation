@@ -62,7 +62,7 @@ def energy_opt(info, delta, state, small_config):
                                              local_only_energy=info["local_only_energy"][target.task_id])
             save = True
         else:
-            print("read from cached times", target.task_id, "edge=", k, "delta=", delta)
+            # print("read from cached times", target.task_id, "edge=", k, "delta=", delta)
             d = 1
         if config is not None and (
                 config[0] < info["local_only_energy"][target.task_id] or not info["local_only_enabled"][target.task_id])\
@@ -78,7 +78,7 @@ def energy_opt(info, delta, state, small_config):
             })
             """
             lock.acquire()
-            print("user", target.task_id, "delta", delta, ">>>>>>>>", small_config)
+            # print("user", target.task_id, "delta", delta, ">>>>>>>>", small_config)
             if save:
                 selected = []
                 partition_delta = []
@@ -107,7 +107,7 @@ def worker(info, state):
                 small_data = target.DAG.jobs[delta].input_data
             else:
                 break
-    print(feasible)
+    # print(feasible)
     small_config = None
     for delta in feasible:
         state["number_of_opt"] += 1
