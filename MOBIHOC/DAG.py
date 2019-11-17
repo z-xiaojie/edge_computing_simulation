@@ -87,10 +87,10 @@ class DAG:
         # density = random.randint(0, self.length - 1)
         for m in range(self.length):
             input_data = output_data
-            output_data = int(random.uniform(250, 750)) * 8000
+            output_data = int(random.uniform(250, 700)) * 8000
             if m <= 0:
                 # computation = int(input_data * complexity)  # input_data
-                computation = random.uniform(0.05, 0.10) * freq
+                computation = random.uniform(0.05, 0.08) * freq
             else:
                 # computation = int(input_data * low_complexity)  # input_data
                 computation = random.uniform(0.15, 0.35) * freq / (self.length - 1)

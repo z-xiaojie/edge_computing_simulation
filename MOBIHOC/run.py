@@ -76,10 +76,10 @@ def local_helper(id):
             print("no request, waiting...")
 
 
-def get_request(x, current_t, opt_delta, channel_allocation, just_updated, player, selection, full, epsilon):
+def get_request(clean_cache, x, current_t, opt_delta, channel_allocation, just_updated, player, selection, full, epsilon):
     # reset_request_pool(player.number_of_user)
     start = time.time()
-    controller = Controller(current_t)
+    controller = Controller(clean_cache)
     controller.initial_info(player=player, selection=selection, opt_delta=opt_delta
                             , full=full, channel_allocation=channel_allocation, epsilon=epsilon)
     controller.reset_request_pool(player.number_of_user)

@@ -16,9 +16,9 @@ import struct
 
 
 class Controller(threading.Thread, Optimization):
-    def __init__(self, current_t):
+    def __init__(self, clean_cache):
         # self.print_lock = threading.Lock()
-        self.current_t = current_t
+        self.clean_cache = clean_cache
         self.player = None
         self.selection = None
         self.opt_delta = None
@@ -73,7 +73,7 @@ class Controller(threading.Thread, Optimization):
         configs = [self.player.users[n].config for n in range(self.player.number_of_user)]
 
         self.info = {
-            "current_t": self.current_t,
+            "clean_cache": self.clean_cache,
             "configs": configs,
             "tasks": job_list,
             "local_only_enabled": [item.local_only_enabled for item in player.users],

@@ -224,8 +224,9 @@ class Helper(Optimization):
             elif not self.done:
                 info = json.loads(str(data.decode('ascii')))
                 print("start to optimizing...", self.doing, info["number_of_user"])
-                if info["current_t"] == 0:
+                if info["clean_cache"] is True:
                     self.cache = []
+                    print("clean cache.........................................................")
                 state = self.create_state(self.doing, info, self.cache)
                 processes = list()
                 for n in self.doing:
