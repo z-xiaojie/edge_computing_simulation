@@ -64,6 +64,18 @@ def energy_opt(info, delta, state, small_config):
         else:
             # print("read from cached times", target.task_id, "edge=", k, "delta=", delta)
             d = 1
+        lock.acquire()
+        # print("user", target.task_id, "delta", delta, ">>>>>>>>", small_config)
+        if save:
+            selected = []
+            partition_delta = []
+            for n in range(info["number_of_user"]):
+                if info["selection"][n] == k:
+                    selected.append(n)
+                    partition_delta.append(info["opt_delta"][n])
+            state['cache'].append(
+                (selected, partition_delta, config, target.task_id, k))
+        lock.release()
         if config is not None and (
                 config[0] < info["local_only_energy"][target.task_id] or not info["local_only_enabled"][target.task_id])\
                 and (small_config is None or small_config["config"][0] > config[0]):
@@ -77,18 +89,6 @@ def energy_opt(info, delta, state, small_config):
                 "config": config
             })
             """
-            lock.acquire()
-            # print("user", target.task_id, "delta", delta, ">>>>>>>>", small_config)
-            if save:
-                selected = []
-                partition_delta = []
-                for n in range(info["number_of_user"]):
-                    if info["selection"][n] == k:
-                        selected.append(n)
-                        partition_delta.append(info["opt_delta"][n])
-                state['cache'].append(
-                    (selected, partition_delta, config, target.task_id, k))
-            lock.release()
     lock.acquire()
     state["number_of_finished_opt"] += 1
     # print("validation", state["validation"])

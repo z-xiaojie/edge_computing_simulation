@@ -25,7 +25,7 @@ def test(I, T, x, full, clean_cache=True, channel_allocation=1, epsilon=0.001, n
         changed = True
         just_updated = -2
         # changed_k = -1
-        req = get_request(True, x, t, opt_delta, channel_allocation, just_updated, player, selection, full, epsilon=epsilon)
+        req = get_request(clean_cache, x, t, opt_delta, channel_allocation, just_updated, player, selection, full, epsilon=epsilon)
         if req is None:
             print(">>>>>>>>>> no more request")
             changed = False
