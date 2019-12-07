@@ -14,13 +14,26 @@ from multiprocessing import Process, Manager
 lock = Lock()
 
 
-def reset_request_pool(number_of_user):
-    request = [{
-                "user": None,
-                "validation": None,
-                "local": False
-            } for n in range(number_of_user)]
-    finish = [0 for n in range(number_of_user)]
+def create_state(doing, info, cache):
+    # multiprocessing POST
+    manager = Manager()
+    state = manager.dict()
+    state['number_of_opt'] = 0
+    state['number_of_finished_opt'] = 0
+    state['cache'] = manager.list()
+    for item in cache:
+        state['cache'].append(item)
+    state['finish'] = manager.list([0 for n in range(info['number_of_user'])])
+    state['request'] = manager.list()
+    state['validation'] = manager.list()
+    for n in range(info['number_of_user']):
+        if doing.__contains__(n):
+            state['request'].append(manager.list())
+            state['validation'].append(manager.list())
+        else:
+            state['request'].append(None)
+            state['validation'].append(None)
+    return state
 
 
 def search_cache(info, user_id, edge_id, cache):
@@ -138,6 +151,12 @@ def worker(info, state):
     lock.release()
 
 
+def check_worker(doing, state):
+    for n in doing:
+        if state['finish'][n] != 1:
+            return False
+    return True
+
 class Helper(Optimization):
     def __init__(self, host, port, start, end):
         self.host = host
@@ -159,12 +178,6 @@ class Helper(Optimization):
         self.request = None
         self.finish = None
 
-    def check_worker(self, doing, state):
-        for n in doing:
-            if state['finish'][n] != 1:
-                return False
-        return True
-
     def recv_msg(self):
         # Read message length and unpack it into an integer
         raw_msglen = self.recvall(4)
@@ -183,27 +196,6 @@ class Helper(Optimization):
                 return None
             data.extend(packet)
         return data
-
-    def create_state(self, doing, info, cache):
-        # multiprocessing POST
-        manager = Manager()
-        state = manager.dict()
-        state['number_of_opt'] = 0
-        state['number_of_finished_opt'] = 0
-        state['cache'] = manager.list()
-        for item in cache:
-            state['cache'].append(item)
-        state['finish'] = manager.list([0 for n in range(info['number_of_user'])])
-        state['request'] = manager.list()
-        state['validation'] = manager.list()
-        for n in range(info['number_of_user']):
-            if doing.__contains__(n):
-                state['request'].append(manager.list())
-                state['validation'].append(manager.list())
-            else:
-                state['request'].append(None)
-                state['validation'].append(None)
-        return state
 
     def optimize(self):
         global validation, finish
@@ -241,9 +233,8 @@ class Helper(Optimization):
                     processes.append(x)
                 for process in processes:
                     process.join()
-                while not self.check_worker(self.doing, state):
-                    # print("finish", state['finish'])
-                    dd = 0
+                while not check_worker(self.doing, state):
+                    pass
                 print(info["current_t"], "request finished in >>>>>>>>>>>>>>>>", time.time() - start)
                 self.cache = copy.copy(list(state['cache']))
                 for n in self.doing:

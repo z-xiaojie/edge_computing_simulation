@@ -76,14 +76,14 @@ def local_helper(id):
             print("no request, waiting...")
 
 
-def get_request(clean_cache, x, current_t, opt_delta, channel_allocation, just_updated, player, selection, full, epsilon):
+def get_request(clean_cache, priority, current_t, opt_delta, channel_allocation, just_updated, player, selection, full, epsilon):
     # reset_request_pool(player.number_of_user)
     start = time.time()
     controller = Controller(clean_cache, current_t)
     controller.initial_info(player=player, selection=selection, opt_delta=opt_delta
                             , full=full, channel_allocation=channel_allocation, epsilon=epsilon)
     controller.reset_request_pool(player.number_of_user)
-    # controller.optimize_locally(controller.info, [0, 1, 2, 3, 4, 5, 6, 7])
+    controller.optimize_locally(controller.info, [n for n in range(player.number_of_user)])
     controller.run(3389)
     # controller.notify_opt()
     # print("waiting...", controller.finish)
@@ -99,7 +99,7 @@ def get_request(clean_cache, x, current_t, opt_delta, channel_allocation, just_u
     # print("request finished in >>>>>>>>>>>>>>>>", time.time() - start, selection, opt_delta)
 
     # print("request", controller.request)
-    if x == 0:
+    if priority == "energy_reduction":
         # ordered based on channel gain
         avg_H = []
         for n in range(player.number_of_user):
@@ -135,24 +135,3 @@ def get_request(clean_cache, x, current_t, opt_delta, channel_allocation, just_u
                 not_tested.remove(n)
                 # n += 1
         return None
-
-"""
-req = [None for k in range(player.number_of_edge)]
-        h_k = [1 for k in range(player.number_of_edge)]
-        for n in range(player.number_of_user):
-            if controller.request[n] is not None and controller.request[n]['validation'] is not None:
-                k = controller.request[n]['validation']["edge"]
-                if player.users[n].H[k] < h_k[k]:
-                    req[k] = controller.request[n]
-                    h_k[k] = player.users[n].H[k]
-        not_tested_k = [k for k in range(player.number_of_edge)]
-        while len(not_tested_k) > 0:
-            k = random.choice(not_tested_k)
-            if req[k] is not None:
-                return [req[k]]
-            else:
-                not_tested_k.remove(k)
-        for item in controller.request:
-            if item is not None and item["local"]:
-                return [item]
-"""

@@ -4,15 +4,17 @@ import math
 import numpy as np
 from threading import Lock
 from _thread import *
-from Client import Helper
+from Client import worker, create_state, check_worker
 import threading
 import json
-from Offloading_Mobihoc import Offloading
 import time
 from Device import Device
 from Optimization import Optimization
 import copy
 import struct
+from multiprocessing import Process, Manager
+
+lock = Lock()
 
 
 class Controller(threading.Thread, Optimization):
@@ -103,37 +105,23 @@ class Controller(threading.Thread, Optimization):
             "stop_point": self.epsilon
         }
 
-    def worker(self, info):
-        validation, target = self.opt(copy.deepcopy(info))
-        if len(validation) > 0:
-            validation.sort(key=lambda x: x["config"][0])
-            if validation[0]["edge"] != info["selection"][target.task_id] \
-                    or validation[0]["config"] != target.config:
-                self.request[target.task_id] = {
-                    "user": target.task_id,
-                    "validation": validation[0],
-                    "local": False
-                }
-        else:
-            if info["selection"][target.task_id] != -1:
-                self.request[target.task_id] = {
-                    "user": target.task_id,
-                    "validation": None,
-                    "local": True
-                }
-        self.finish[target.task_id] = 1
-
     def optimize_locally(self, info, doing):
-        self.validation = [[] for n in range(info["number_of_user"])]
+        state = create_state(doing, info, self.cache)
+        processes = list()
         for n in doing:
-            # 为每个worker创建一个线程
             info["who"] = Device(info["user_cpu"][n], n, info["H"][n]
                                  , transmission_power=info["P_max"][n], epsilon=info["stop_point"])
             info["who"].inital_DAG(n, info["tasks"][n], info["D_n"][n], info["D_n"][n])
             info["who"].local_only_execution()
             info["who"].config = info["configs"][n]
-            x = threading.Thread(target=self.worker, args=(copy.deepcopy(info),))
+            x = Process(target=worker, args=(copy.deepcopy(info), state))
             x.start()
+            processes.append(x)
+        for process in processes:
+            process.join()
+        while not check_worker(doing, state):
+            pass
+        print(info["current_t"], "request finished in >>>>>>>>>>>>>>>>", time.time() - start)
 
     def run(self, port=12345):
         host = ""
@@ -205,9 +193,9 @@ class Controller(threading.Thread, Optimization):
                         self.finish[n] = 1
                     self.lock.release()
                     while not self.check_worker([n for n in range(self.player.number_of_user)]):
-                        ddd = 1
+                        pass
                     self.close()
                 else:
-                    ddd = 1
+                    pass
             except socket.error:
                 return

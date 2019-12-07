@@ -7,10 +7,10 @@ import copy
 import math
 
 
-def test(I, T, x, full, clean_cache=True, channel_allocation=1, epsilon=0.001, number_of_user=5, number_of_edge=1, player=None):
+def test(iteration, increment, priority, full, clean_cache=True, channel_allocation=1, epsilon=0.001, player=None):
 
-    selection = np.zeros(number_of_user).astype(int) - 1
-    opt_delta = np.zeros(number_of_user).astype(int) - 1
+    selection = np.zeros(player.number_of_user).astype(int) - 1
+    opt_delta = np.zeros(player.number_of_user).astype(int) - 1
     ee_local, finished, user_hist = initial_energy_all_local(selection, player)
     print("local=", finished)
     print("total=", [item.total_computation for item in player.users])
@@ -25,7 +25,7 @@ def test(I, T, x, full, clean_cache=True, channel_allocation=1, epsilon=0.001, n
         changed = True
         just_updated = -2
         # changed_k = -1
-        req = get_request(clean_cache, x, t, opt_delta, channel_allocation, just_updated, player, selection, full, epsilon=epsilon)
+        req = get_request(clean_cache, priority, t, opt_delta, channel_allocation, just_updated, player, selection, full, epsilon=epsilon)
         if req is None:
             print(">>>>>>>>>> no more request")
             changed = False
@@ -47,7 +47,7 @@ def test(I, T, x, full, clean_cache=True, channel_allocation=1, epsilon=0.001, n
                     # player.edges[k].update_resource_allocation(validation["info"])
                     selection[n] = k
 
-        for n in range(number_of_user):
+        for n in range(player.number_of_user):
             if player.users[n].config is not None:
                 opt_delta[n] = player.users[n].config[5]
             else:
@@ -60,20 +60,20 @@ def test(I, T, x, full, clean_cache=True, channel_allocation=1, epsilon=0.001, n
             finish_hist.append(np.sum(finished))
             hist.append(np.sum(energy))
             if changed:
-                opt_e_cpu = np.zeros(number_of_edge)
-                bandwidth = np.zeros(number_of_edge)
-                for n in range(number_of_user):
+                opt_e_cpu = np.zeros(player.number_of_edge)
+                bandwidth = np.zeros(player.number_of_edge)
+                for n in range(player.number_of_user):
                     if player.users[n].config is not None:
                         bandwidth[selection[n]] += player.users[n].config[4]
                         opt_e_cpu[selection[n]] = round(player.users[n].config[2] / math.pow(10, 9), 4)
                 F = True
-                for k in range(number_of_edge):
+                for k in range(player.number_of_edge):
                     if opt_e_cpu[k] > player.edges[k].freq or bandwidth[k] > player.edges[k].number_of_chs:
                         F = False
                         break
                 for target in req:
                     n, validation, local = target["user"], target["validation"], target["local"]
-                    print(I, T, t, round(np.sum(energy), 5), "/", local_sum, np.sum(finished), F, ">>>", n, ">>>",
+                    print(iteration, increment, t, round(np.sum(energy), 5), "/", local_sum, np.sum(finished), F, ">>>", n, ">>>",
                           validation)
 
         if not changed:
@@ -94,7 +94,7 @@ def test(I, T, x, full, clean_cache=True, channel_allocation=1, epsilon=0.001, n
     opt_delta = []
     bandwidth = []
     local, remote, local_to_remote = 0, 0, 0
-    for n in range(number_of_user):
+    for n in range(player.number_of_user):
         local += round(player.users[n].local/math.pow(10, 9), 5)
         remote += round(player.users[n].remote/math.pow(10, 9), 5)
         local_to_remote += round(player.users[n].local_to_remote_size / 8000, 5)
@@ -111,7 +111,7 @@ def test(I, T, x, full, clean_cache=True, channel_allocation=1, epsilon=0.001, n
             opt_cpu.append(0)
             bandwidth.append(0)
             opt_e_cpu.append(0)
-    """
+
     print(">>>>>>>>>>>>>>>> TIME >>>>>>>>>>>>>>>>>>")
     print("adjusted local power", opt_power)
     print("adjusted local   CPU", opt_cpu)
@@ -131,15 +131,4 @@ def test(I, T, x, full, clean_cache=True, channel_allocation=1, epsilon=0.001, n
           [round(player.users[n].local/math.pow(10, 9), 5) for n in range(player.number_of_user)])
     print("remote computation",
           [round(player.users[n].remote/math.pow(10, 9), 5) for n in range(player.number_of_user)])
-    """
 
-    ip = 0
-    for n in range(number_of_user):
-         ip += 1 - energy[n]/ee_local[n]
-
-    # print("all=", list(hist))
-    # print("total computation", [round(player.users[n].total_computation, 4) for n in range(number_of_user)])
-    # print("finish time", [round((transmission[n] + computation[n] + edge_computation[n] - player.users[n].DAG.D/1000), 5) for n in range(player.number_of_user)])
-
-    return t, finish_hist, bandwidth, opt_delta, selection, np.sum(finished)/number_of_user, round(np.sum(energy), 5), round(np.sum(ee_local), 5)\
-        , round(ip/number_of_user, 5), round(local, 5), round(remote, 5), round(local_to_remote, 5)
