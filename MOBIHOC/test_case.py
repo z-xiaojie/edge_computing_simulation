@@ -7,7 +7,7 @@ import copy
 import math
 
 
-def test(iteration, increment, priority, full, clean_cache=True, channel_allocation=1, epsilon=0.001, player=None):
+def test(args, iteration, increment, priority, full, clean_cache=True, channel_allocation=1, player=None):
 
     selection = np.zeros(player.number_of_user).astype(int) - 1
     opt_delta = np.zeros(player.number_of_user).astype(int) - 1
@@ -25,7 +25,7 @@ def test(iteration, increment, priority, full, clean_cache=True, channel_allocat
         changed = True
         just_updated = -2
         # changed_k = -1
-        req = get_request(clean_cache, priority, t, opt_delta, channel_allocation, just_updated, player, selection, full, epsilon=epsilon)
+        req = get_request(args, clean_cache, priority, t, opt_delta, channel_allocation, just_updated, player, selection, full)
         if req is None:
             print(">>>>>>>>>> no more request")
             changed = False

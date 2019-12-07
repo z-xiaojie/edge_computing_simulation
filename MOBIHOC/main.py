@@ -28,4 +28,4 @@ if __name__ == "__main__":
     for iteration in range(iterations):
         player = create_game(args)
         for t in range(I):
-            test(iteration, t, 0, False, clean_cache=True, channel_allocation=1, epsilon=args.epsilon, player=copy.deepcopy(player))
+            test(args, iteration, t, 0, False, clean_cache=True, channel_allocation=1, player=copy.deepcopy(player))

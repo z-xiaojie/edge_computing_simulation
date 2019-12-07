@@ -106,6 +106,7 @@ class Controller(threading.Thread, Optimization):
         }
 
     def optimize_locally(self, info, doing):
+        start = time.time()
         state = create_state(doing, info, self.cache)
         processes = list()
         for n in doing:
