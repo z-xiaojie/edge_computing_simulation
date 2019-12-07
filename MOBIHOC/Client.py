@@ -219,7 +219,7 @@ class Helper(Optimization):
                 if info["clean_cache"] is True and info["current_t"] == 0:
                     self.cache = []
                     print("clean cache.........................................................")
-                state = self.create_state(self.doing, info, self.cache)
+                state = create_state(self.doing, info, self.cache)
                 processes = list()
                 for n in self.doing:
                     info["who"] = Device(info["user_cpu"][n], n, info["H"][n]
