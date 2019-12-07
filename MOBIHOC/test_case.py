@@ -1,10 +1,7 @@
-import random
-from Role import Role
 from run import initial_energy_all_local, energy_update, get_request
 import numpy as np
-import matplotlib.pyplot as plt
-import copy
 import math
+from Client import check_worker
 
 
 def test(args, iteration, increment, priority, full, clean_cache=True, channel_allocation=1, player=None):

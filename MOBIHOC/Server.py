@@ -106,7 +106,6 @@ class Controller(threading.Thread, Optimization):
         }
 
     def optimize_locally(self, info, doing):
-        start = time.time()
         state = create_state(doing, info, self.cache)
         processes = list()
         for n in doing:
@@ -120,31 +119,20 @@ class Controller(threading.Thread, Optimization):
             processes.append(x)
         for process in processes:
             process.join()
-        while not check_worker(doing, state):
-            pass
-        print(info["current_t"], "request finished in >>>>>>>>>>>>>>>>", time.time() - start)
 
     def run(self, port=12345):
         host = ""
         port = port
         self.s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.s.bind((host, port))
-        # print("socket binded to port", port)
-        # put the socket into listening mode
         self.s.listen(5)
-        # print("socket is listening")
-        # a forever loop until client wants to exit
         while True:
-            # establish connection with client
             try:
                 c, addr = self.s.accept()
-                # lock acquired by client
-                # self.print_lock.acquire()
                 self.c.append(c)
-                # print('Connected to :', addr[0], ':', addr[1])
-                # Start a new thread and return its identifier
                 start_new_thread(self.client_threaded, (c,))
-            except:
+            except Exception as e:
+                print(e.__str__())
                 break
 
     def close(self):

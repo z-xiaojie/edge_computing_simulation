@@ -83,9 +83,8 @@ def get_request(args, clean_cache, priority, current_t, opt_delta, channel_alloc
     controller.initial_info(player=player, selection=selection, opt_delta=opt_delta
                             , full=full, channel_allocation=channel_allocation, epsilon=args.epsilon)
     controller.reset_request_pool(player.number_of_user)
-    controller.optimize_locally(controller.info, [n for n in range(args.helper)])
+    # controller.optimize_locally(controller.info, [n for n in range(args.helper)])
     controller.run(3389)
-    # controller.notify_opt()
     print("waiting...", controller.finish)
     while not controller.check_worker([n for n in range(player.number_of_user)]):
         pass
