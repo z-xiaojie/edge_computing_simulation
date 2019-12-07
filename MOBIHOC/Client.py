@@ -125,8 +125,6 @@ def worker(info, state):
     for delta in feasible:
         state["number_of_opt"] += 1
         small_config = energy_opt(copy.deepcopy(info), delta, state, small_config)
-        # x = threading.Thread(target=energy_opt, args=(copy.deepcopy(info), delta, target.task_id))
-        # x.start()
     lock.acquire()
     if small_config is not None:
         state["validation"][target.task_id].append(small_config)
@@ -148,6 +146,7 @@ def worker(info, state):
                 "local": True
             }
     state['finish'][target.task_id] = 1
+    print(state['finish'])
     lock.release()
 
 
