@@ -11,7 +11,7 @@ from test_case import test
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("--user", type=int, default=15, help="number of users")
-    parser.add_argument("--edge", type=int, default=int, help="number of edge servers")
+    parser.add_argument("--edge", type=int, default=3, help="number of edge servers")
     parser.add_argument("--port", type=int, default=3389, help="controller port")
     parser.add_argument("--helper", type=int, default=10, help="number of helpers working on this controller")
     parser.add_argument("--run", type=int, default=1, help="number of iterations")
