@@ -18,7 +18,7 @@ adaptive= [0.13594, 0.0795, 0.06432]
 
 """
 
-iterations = 15
+iterations = 25
 I = 5
 hist = [[np.zeros(I) for i in range(20)] for j in range(3)]
 selection1, selection2, selection3 = None, None, None
@@ -48,12 +48,13 @@ for i in range(iterations):
         for k in range(number_of_edge):
             player.edges[k].freq = cpu[k]
             player.edges[k].number_of_chs = number_of_chs[k]
-            cpu[k] += 0.5 * math.pow(10, 9)
-            number_of_chs[k] += 1
+            cpu[k] += 1 * math.pow(10, 9)
+            number_of_chs[k] += 3
         it1, finish_hist1, bandwidth1, opt_delta1, selection1, finished1, energy1, local1, improvement1, local, remote, local_to_remote \
             = test(i, t, 0, False, clean_cache=True, channel_allocation=1, epsilon=epsilon, number_of_user=number_of_user, number_of_edge=number_of_edge
                                       ,player=copy.deepcopy(player))
-        print("sub-channel", bandwidth1)
+        print("selection", selection1)
+        print("sub-channel", bandwidth1, [player.edges[k].number_of_chs for k in range(number_of_edge)])
         print("partition", opt_delta1)
 
         hist[0][0][t] += finished1
@@ -68,8 +69,8 @@ for i in range(iterations):
         it2, finish_hist2, bandwidth2, opt_delta2, selection2, finished2, energy2, local2, improvement2, local, remote, local_to_remote \
             = test(i, t, 0, True, clean_cache=False, channel_allocation=1, epsilon=epsilon, number_of_user=number_of_user, number_of_edge=number_of_edge
                                          ,player=copy.deepcopy(player))
-
-        print("sub-channel", bandwidth2)
+        print("selection", selection2)
+        print("sub-channel", bandwidth2, [player.edges[k].number_of_chs for k in range(number_of_edge)])
         print("partition", opt_delta2)
 
         # if finished1 != 1 or finished2 != 1:
