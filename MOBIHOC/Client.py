@@ -76,7 +76,7 @@ def energy_opt(info, delta, state, small_config):
             save = True
         else:
             # print("read from cached times", target.task_id, "edge=", k, "delta=", delta)
-            d = 1
+            pass
         lock.acquire()
         # print("user", target.task_id, "delta", delta, ">>>>>>>>", small_config)
         if save:
@@ -156,6 +156,7 @@ def check_worker(doing, state):
         if state['finish'][n] != 1:
             return False
     return True
+
 
 class Helper(Optimization):
     def __init__(self, host, port, start, end):

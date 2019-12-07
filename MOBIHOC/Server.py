@@ -121,6 +121,7 @@ class Controller(threading.Thread, Optimization):
         for process in processes:
             process.join()
         while not check_worker(doing, state):
+            print(state["finish"])
             pass
         print(info["current_t"], "request finished in >>>>>>>>>>>>>>>>", time.time() - start)
 
