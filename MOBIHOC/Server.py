@@ -184,7 +184,6 @@ class Controller(threading.Thread, Optimization):
                     while not self.check_worker([n for n in range(self.player.number_of_user)]):
                         pass
                     self.close()
-                else:
-                    pass
             except socket.error:
+                self.close()
                 return
