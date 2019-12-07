@@ -5,7 +5,7 @@ from Role import Role
 
 
 def create_game(args):
-    number_of_user, number_of_edge, epsilon = args.user, args.edge, 0.0005
+    number_of_user, number_of_edge, epsilon = args.user, args.edge, args.epsilon
     number_of_chs = np.array([random.randint(args.min_chs,  args.max_chs) for x in range(number_of_edge)])
     cpu = np.array([random.uniform(args.min_cpu,  args.max_cpu) * math.pow(10, 9) for x in range(number_of_edge)])
     H = [[round(np.random.rayleigh(np.sqrt(2 / np.pi) * math.pow(10, -3)), 5) for y in range(number_of_edge)] for x

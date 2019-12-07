@@ -22,7 +22,7 @@ if __name__ == "__main__":
     parser.add_argument("--increment", type=int, default=1, help="number of sub-channels")
     parser.add_argument("--epsilon", type=float, default=0.0005, help="number of sub-channels")
     args = parser.parse_args()
-
+    print(args.min_chs)
     iterations = args.run
     I = args.increment
     for iteration in range(iterations):
