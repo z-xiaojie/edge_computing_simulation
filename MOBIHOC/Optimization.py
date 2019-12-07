@@ -4,7 +4,6 @@ import threading
 from threading import Lock
 import copy
 
-
 class Optimization:
     def __init__(self):
         self.cache = []
