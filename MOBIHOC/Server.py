@@ -156,7 +156,7 @@ class Controller(threading.Thread, Optimization):
         c.sendall(msg)
 
     def notify_all(self):
-        print("sending computing requests...")
+        # print("sending computing requests...")
         for c in self.c:
             try:
                 self.info["who"] = None
@@ -164,7 +164,7 @@ class Controller(threading.Thread, Optimization):
                 self.send_msg(c, json_data)
             except socket.error:
                 pass
-        print("sending computing requests...Done!")
+        # print("sending computing requests...Done!")
 
     def client_threaded(self, c):
         message = "start_opt"

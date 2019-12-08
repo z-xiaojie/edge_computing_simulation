@@ -272,7 +272,7 @@ class Offloading:
             t = t + 1
             if stop1:
                 break
-            if (round(np.sum(pre_diff), 6) == round(np.sum(diff), 6) and t > 800) or t >= 2500:
+            if (round(np.sum(pre_diff), 6) == round(np.sum(diff), 6) and t > 500) or t >= 1300:
                 return True, None, t
             else:
                 pre_diff = diff

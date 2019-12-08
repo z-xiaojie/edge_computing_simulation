@@ -71,7 +71,7 @@ def test(controller, args, iteration, increment):
         if not changed:
             break
 
-        if (t > 100 and F) or t > 150:
+        if (t > 70 and F) or t > 150:
             break
 
     user_hist, energy, finished, transmission, computation, edge_computation = energy_update(controller.player,
