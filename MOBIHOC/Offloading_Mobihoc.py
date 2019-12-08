@@ -302,9 +302,9 @@ class Offloading:
                            self.D_n[who]
             if delta == 0:
                 self.f_n[who] = 0
-            return [round(target_energy, 7), round(self.f_n[who]), round(self.f_n_k[who][0])
-                 , round(self.p_n[who], 10), self.get_ch_number(who), delta
-                 ,self.edge_id, t, round(finish_time2, 7), who]
+            return [round(target_energy, 7), round(self.f_n[who]), round(self.f_n_k[who][0]), round(self.p_n[who], 5)
+                 ,self.get_ch_number(who), delta
+                 ,self.edge_id, t, round(finish_time2, 5), who]
         else:
             return None
 

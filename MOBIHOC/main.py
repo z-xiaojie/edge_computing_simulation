@@ -5,7 +5,10 @@ import argparse
 import numpy as np
 import copy
 import math
+from _thread import *
+import threading
 from test_case import test
+from Server import Controller
 
 
 if __name__ == "__main__":
@@ -20,12 +23,17 @@ if __name__ == "__main__":
     parser.add_argument("--min_cpu", type=int, default=3, help="number of sub-channels")
     parser.add_argument("--max_cpu", type=int, default=6, help="number of sub-channels")
     parser.add_argument("--increment", type=int, default=1, help="number of sub-channels")
-    parser.add_argument("--epsilon", type=float, default=0.0005, help="number of sub-channels")
+    parser.add_argument("--epsilon", type=float, default=0.001, help="number of sub-channels")
     args = parser.parse_args()
-    print(args.min_chs)
+
+    controller = Controller(selection=np.zeros(args.user).astype(int) - 1, opt_delta=np.zeros(args.user).astype(int) - 1)
+    start_new_thread(controller.run, (3389,))
+
     iterations = args.run
     I = args.increment
     for iteration in range(iterations):
-        player = create_game(args)
+        # controller.player = create_game(args)
+        controller.inital_config(create_game(args), args.epsilon, priority="energy_reduction", clean_cache=True
+                                 , channel_allocation=1, full=False)
         for t in range(I):
-            test(args, iteration, t, 0, False, clean_cache=True, channel_allocation=1, player=copy.deepcopy(player))
+            test(controller, args, iteration, t)

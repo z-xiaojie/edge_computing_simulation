@@ -19,13 +19,13 @@ lock = Lock()
 
 
 class Controller(threading.Thread, Optimization):
-    def __init__(self, clean_cache, current_t):
+    def __init__(self, selection, opt_delta):
         # self.print_lock = threading.Lock()
-        self.clean_cache = clean_cache
-        self.current_t = current_t
+        self.clean_cache = None
+        self.current_t = None
         self.player = None
-        self.selection = None
-        self.opt_delta = None
+        self.selection = selection
+        self.opt_delta = opt_delta
         self.full = None
         self.channel_allocation = None
         self.epsilon = None
@@ -37,7 +37,7 @@ class Controller(threading.Thread, Optimization):
         self.request = None
         self.finish = None
         self.lock = Lock()
-
+        self.priority = None
         self.number_of_opt = 0
         self.number_of_finished_opt = 0
         self.validation = None
@@ -52,13 +52,16 @@ class Controller(threading.Thread, Optimization):
                 return False
         return True
 
-    def initial_info(self, player=None, selection=None, opt_delta=None, full=None, channel_allocation=None, epsilon=None):
+    def inital_config(self, player, epsilon, priority="energy_reduction", clean_cache=True, channel_allocation=1, full=False):
         self.player = player
-        self.selection = selection
-        self.opt_delta = opt_delta
         self.full = full
+        self.priority = priority
         self.channel_allocation = channel_allocation
         self.epsilon = epsilon
+        self.clean_cache = clean_cache
+
+    def initial_info(self, player=None, current_t=None):
+        self.current_t = current_t
         job_list = []
         for n in range(self.player.number_of_user):
             self.player.users[n].partition()
@@ -143,16 +146,6 @@ class Controller(threading.Thread, Optimization):
                 c.close()
             except socket.error:
                 pass
-        self.s.close()
-
-    def notify_opt(self):
-        try:
-            for c in self.c:
-                self.info["who"] = None
-                json_data = json.dumps(self.info).encode("utf-8")
-                c.send(json_data)
-        except socket.error:
-            return
 
     def send_msg(self, c, msg):
         # Prefix each message with a 4-byte length (network byte order)
@@ -173,7 +166,7 @@ class Controller(threading.Thread, Optimization):
                     result = json.loads(str(data.decode('ascii')))
                     request = result["req"]
                     doing = result["doing"]
-                    print("request", request)
+                    # print("request", request)
                     message = "waiting"
                     self.send_msg(c, message.encode('ascii'))
                     self.lock.acquire()

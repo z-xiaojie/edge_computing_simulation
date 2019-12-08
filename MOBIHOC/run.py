@@ -76,43 +76,41 @@ def local_helper(id):
             print("no request, waiting...")
 
 
-def get_request(args, clean_cache, priority, current_t, opt_delta, channel_allocation, just_updated, player, selection, full):
+def get_request(controller, current_t):
     # reset_request_pool(player.number_of_user)
     start = time.time()
-    controller = Controller(clean_cache, current_t)
-    controller.initial_info(player=player, selection=selection, opt_delta=opt_delta
-                            , full=full, channel_allocation=channel_allocation, epsilon=args.epsilon)
-    controller.reset_request_pool(player.number_of_user)
+    controller.reset_request_pool(controller.player.number_of_user)
+    controller.initial_info(player=copy.deepcopy(controller.player), current_t=current_t)
     # controller.optimize_locally(controller.info, [n for n in range(args.helper)])
-    start_new_thread(controller.run, (3389,))
+    # start_new_thread(controller.run, (3389,))
     # controller.run(3389)
     # print("waiting...", controller.finish)
-    while not controller.check_worker([n for n in range(player.number_of_user)]):
+    while not controller.check_worker([n for n in range(controller.player.number_of_user)]):
         pass
 
     opt_delta = []
-    for n in range(player.number_of_user):
-        if player.users[n].config is not None:
-            opt_delta.append(player.users[n].config[5])
+    for n in range(controller.player.number_of_user):
+        if controller.player.users[n].config is not None:
+            opt_delta.append(controller.player.users[n].config[5])
         else:
             opt_delta.append(-1)
-    # print("request finished in >>>>>>>>>>>>>>>>", time.time() - start, selection, opt_delta)
+    print("\t + req get in >>>>>>>>>>", round(time.time() - start), controller.selection, opt_delta)
 
     # print("request", controller.request)
-    if priority == "energy_reduction":
+    if controller.priority == "energy_reduction":
         # ordered based on channel gain
         avg_H = []
-        for n in range(player.number_of_user):
+        for n in range(controller.player.number_of_user):
             if controller.request[n] is None:
                 avg_H.append([0., n])
                 continue
             if controller.request[n] is not None and controller.request[n]['validation'] is not None:
-                ip = player.users[n].local_only_energy - controller.request[n]['validation']['config'][0]
+                ip = controller.player.users[n].local_only_energy - controller.request[n]['validation']['config'][0]
                 avg_H.append([ip, n])
             else:
                 avg_H.append([0., n])
         avg_H = sorted(avg_H, key=lambda x:x[0], reverse=True)
-        not_tested = [avg_H[n][1] for n in range(player.number_of_user)]
+        not_tested = [avg_H[n][1] for n in range(controller.player.number_of_user)]
         # print("not_tested", not_tested)
         n = 0
         while len(not_tested) > n:
@@ -123,14 +121,14 @@ def get_request(args, clean_cache, priority, current_t, opt_delta, channel_alloc
                 n += 1
         return None
     else:
-        not_tested = [n for n in range(player.number_of_user)]
+        not_tested = [n for n in range(controller.player.number_of_user)]
         # print("not_tested", not_tested)
         # n = 0
         while len(not_tested) > 0:
             n = random.choice(not_tested)
             if controller.request[n] is not None:
                 # [controller.request[n]]
-                return get_requests(controller.request, controller.request[n], selection)
+                return get_requests(controller.request, controller.request[n], controller.selection)
             else:
                 not_tested.remove(n)
                 # n += 1
