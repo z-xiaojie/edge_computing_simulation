@@ -80,9 +80,10 @@ def get_request(controller, current_t):
     for n in range(controller.player.number_of_user):
         controller.player.users[n].partition()
 
-    start = time.time()
+    # start = time.time()
     controller.reset_request_pool(controller.player.number_of_user)
     controller.initial_info(player=copy.deepcopy(controller.player), current_t=current_t)
+    controller.notify_all()
     # controller.optimize_locally(controller.info, [n for n in range(args.helper)])
     # start_new_thread(controller.run, (3389,))
     # controller.run(3389)
@@ -98,7 +99,7 @@ def get_request(controller, current_t):
             opt_delta.append(-1)
     # print("\t + req get in >>>>>>>>>>", round(time.time() - start), controller.selection, opt_delta)
 
-    # print("request", controller.request)
+    print("request", controller.request)
     if controller.priority == "energy_reduction":
         # ordered based on channel gain
         avg_H = []

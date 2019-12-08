@@ -213,7 +213,7 @@ class Helper(Optimization):
                 print("done, close connection")
                 self.s.close()
                 return
-            elif not self.done:
+            else:
                 info = json.loads(str(data.decode('ascii')))
                 print("start to optimizing...", self.doing, info["number_of_user"])
                 if info["clean_cache"] is True and info["current_t"] == 0:

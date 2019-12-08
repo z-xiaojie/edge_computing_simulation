@@ -135,6 +135,9 @@ class Controller(threading.Thread, Optimization):
                 c, addr = self.s.accept()
                 self.c.append(c)
                 start_new_thread(self.client_threaded, (c,))
+                print("connected to ", addr)
+                if len(self.c) == 2:
+                    break
             except Exception as e:
                 break
 
@@ -152,12 +155,20 @@ class Controller(threading.Thread, Optimization):
         msg = struct.pack('>I', len(msg)) + msg
         c.sendall(msg)
 
+    def notify_all(self):
+        print("sending computing requests...")
+        for c in self.c:
+            try:
+                self.info["who"] = None
+                json_data = json.dumps(self.info).encode("ascii")
+                self.send_msg(c, json_data)
+            except socket.error:
+                pass
+        print("sending computing requests...Done!")
+
     def client_threaded(self, c):
         message = "start_opt"
         self.send_msg(c, message.encode('ascii'))
-        self.info["who"] = None
-        json_data = json.dumps(self.info).encode("ascii")
-        self.send_msg(c, json_data)
         while True:
             try:
                 data = c.recv(5024)
@@ -167,19 +178,12 @@ class Controller(threading.Thread, Optimization):
                     request = result["req"]
                     doing = result["doing"]
                     # print("request", request)
-                    message = "waiting"
-                    self.send_msg(c, message.encode('ascii'))
+                    # message = "waiting"
+                    # self.send_msg(c, message.encode('ascii'))
                     self.lock.acquire()
                     for n in doing:
                         self.request[n] = request[n]
                         self.finish[n] = 1
                     self.lock.release()
-                    while not self.check_worker([n for n in range(self.player.number_of_user)]):
-                        pass
-                    message = "close"
-                    self.send_msg(c, message.encode('ascii'))
-                    c.close()
-            except Exception as e:
-                # print(traceback.format_exc())
-                # return
+            except:
                 pass
