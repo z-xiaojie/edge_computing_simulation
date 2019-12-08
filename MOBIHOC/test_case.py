@@ -19,7 +19,7 @@ def test(controller, args, iteration, increment):
         changed = True
         req = get_request(controller, t)
         if req is None:
-            print(">>>>>>>>>> no more request")
+            print(">>>>>>>>>> no more request", controller.selection)
             changed = False
         else:
             for target in req:
@@ -65,8 +65,8 @@ def test(controller, args, iteration, increment):
                         break
                 for target in req:
                     n, validation, local = target["user"], target["validation"], target["local"]
-                    print(iteration, increment, t, round(np.sum(energy), 5), "/", local_sum, np.sum(finished), F, ">>>", n, ">>>",
-                          validation)
+                    print(iteration, increment, t, round(np.sum(energy), 5), "/", local_sum, np.sum(finished), F, ">>>", n)
+                    #       validation)
 
         if not changed:
             break
@@ -104,6 +104,7 @@ def test(controller, args, iteration, increment):
             bandwidth.append(0)
             opt_e_cpu.append(0)
 
+    """
     print(">>>>>>>>>>>>>>>> TIME >>>>>>>>>>>>>>>>>>")
     print("adjusted local power", opt_power)
     print("adjusted local   CPU", opt_cpu)
@@ -120,7 +121,10 @@ def test(controller, args, iteration, increment):
     print("local only energy", round(np.sum(ee_local), 6), ee_local)
     print("            delta", opt_delta)
     print("local computation",
-          [round(controller.player.users[n].local/math.pow(10, 9), 5) for n in range(controller.player.number_of_user)])
+          sum([round(controller.player.users[n].local/math.pow(10, 9), 5) for n in range(controller.player.number_of_user)]))
     print("remote computation",
           [round(controller.player.users[n].remote/math.pow(10, 9), 5) for n in range(controller.player.number_of_user)])
+    """
+    print("improve path =", hist)
+    print("finish path =", finish_hist)
 

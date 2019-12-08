@@ -39,7 +39,7 @@ def energy_update(player, selection, user_hist, save=True):
                 finished.append(1)
             else:
                 finished.append(0)
-            transmission.append(0)
+            transmission.append(player.users[n].DAG.D / 1000)
             computation.append(0)
             edge_computation.append(0)
         else:
@@ -56,10 +56,9 @@ def energy_update(player, selection, user_hist, save=True):
                     user_hist[n].append(round(e, 5))
             else:
                 transmission.append(0)
-                computation.append(0)
+                computation.append(player.users[n].DAG.D / 1000)
                 edge_computation.append(0)
                 finished.append(0)
-    # if np.sum(finished) == player.number_of_user:
     return user_hist, energy, finished, transmission, computation, edge_computation
 
 
@@ -78,6 +77,9 @@ def local_helper(id):
 
 def get_request(controller, current_t):
     # reset_request_pool(player.number_of_user)
+    for n in range(controller.player.number_of_user):
+        controller.player.users[n].partition()
+
     start = time.time()
     controller.reset_request_pool(controller.player.number_of_user)
     controller.initial_info(player=copy.deepcopy(controller.player), current_t=current_t)
@@ -94,7 +96,7 @@ def get_request(controller, current_t):
             opt_delta.append(controller.player.users[n].config[5])
         else:
             opt_delta.append(-1)
-    print("\t + req get in >>>>>>>>>>", round(time.time() - start), controller.selection, opt_delta)
+    # print("\t + req get in >>>>>>>>>>", round(time.time() - start), controller.selection, opt_delta)
 
     # print("request", controller.request)
     if controller.priority == "energy_reduction":
@@ -128,7 +130,7 @@ def get_request(controller, current_t):
             n = random.choice(not_tested)
             if controller.request[n] is not None:
                 # [controller.request[n]]
-                return get_requests(controller.request, controller.request[n], controller.selection)
+                return [controller.request[n]] # get_requests(controller.request, controller.request[n], controller.selection)
             else:
                 not_tested.remove(n)
                 # n += 1

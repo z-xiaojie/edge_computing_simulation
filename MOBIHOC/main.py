@@ -23,7 +23,7 @@ if __name__ == "__main__":
     parser.add_argument("--min_cpu", type=int, default=3, help="number of sub-channels")
     parser.add_argument("--max_cpu", type=int, default=6, help="number of sub-channels")
     parser.add_argument("--increment", type=int, default=1, help="number of sub-channels")
-    parser.add_argument("--epsilon", type=float, default=0.001, help="number of sub-channels")
+    parser.add_argument("--epsilon", type=float, default=0.0005, help="number of sub-channels")
     args = parser.parse_args()
 
     controller = Controller(selection=np.zeros(args.user).astype(int) - 1, opt_delta=np.zeros(args.user).astype(int) - 1)
@@ -32,8 +32,17 @@ if __name__ == "__main__":
     iterations = args.run
     I = args.increment
     for iteration in range(iterations):
-        # controller.player = create_game(args)
-        controller.inital_config(create_game(args), args.epsilon, priority="energy_reduction", clean_cache=True
-                                 , channel_allocation=1, full=False)
+        player = create_game(args)
         for t in range(I):
+            controller.inital_config(copy.deepcopy(player), args.epsilon, priority="energy_reduction", clean_cache=True
+                                     , channel_allocation=1, full=False)
             test(controller, args, iteration, t)
+
+            controller.selection = np.zeros(args.user).astype(int) - 1
+            controller.opt_delta = np.zeros(args.user).astype(int) - 1
+
+            controller.inital_config(copy.deepcopy(player), args.epsilon, priority="random", clean_cache=True
+                                     , channel_allocation=1, full=False)
+            test(controller, args, iteration, t)
+
+

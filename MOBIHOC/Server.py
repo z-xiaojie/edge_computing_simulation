@@ -176,7 +176,9 @@ class Controller(threading.Thread, Optimization):
                     self.lock.release()
                     while not self.check_worker([n for n in range(self.player.number_of_user)]):
                         pass
-                    self.close()
+                    message = "close"
+                    self.send_msg(c, message.encode('ascii'))
+                    c.close()
             except Exception as e:
                 # print(traceback.format_exc())
                 # return
