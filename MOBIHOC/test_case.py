@@ -128,3 +128,14 @@ def test(controller, args, iteration, increment):
     print("improve path =", hist)
     print("finish path =", finish_hist)
 
+    data = sum([round(controller.player.users[n].local_to_remote_size / 8000, 5) for n in
+               range(controller.player.number_of_user)])
+    remote = sum([round(controller.player.users[n].remote / math.pow(10, 9), 5) for n in
+                  range(controller.player.number_of_user)])
+    print("local computation",
+          sum([round(controller.player.users[n].local/math.pow(10, 9), 5) for n in range(controller.player.number_of_user)]))
+    print("data",
+          )
+    print("remote computation", remote)
+    return hist[-1], data, remote
+

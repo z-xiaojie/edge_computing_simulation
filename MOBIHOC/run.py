@@ -123,8 +123,24 @@ def get_request(controller, current_t):
             else:
                 n += 1
         return None
-    else:
-        not_tested = [n for n in range(controller.player.number_of_user)]
+    elif controller.priority == "data":
+        # not_tested = [n for n in range(controller.player.number_of_user)]
+        avg_H = []
+        for n in range(controller.player.number_of_user):
+            if controller.request[n] is None:
+                avg_H.append([0., n])
+                continue
+            if controller.request[n] is not None and controller.request[n]['validation'] is not None:
+                delta = controller.request[n]['validation']['config'][5]
+                if delta == 0:
+                    avg_H.append([round(controller.player.users[n].DAG.jobs[delta].input_data), n])
+                else:
+                    avg_H.append([round(round(controller.player.users[n].DAG.jobs[delta - 1].output_data)), n])
+            else:
+                avg_H.append([0., n])
+        avg_H = sorted(avg_H, key=lambda x: x[0])
+        not_tested = [avg_H[n][1] for n in range(controller.player.number_of_user)]
+        # print("not_tested", not_tested)
         # print("not_tested", not_tested)
         # n = 0
         while len(not_tested) > 0:
@@ -136,3 +152,20 @@ def get_request(controller, current_t):
                 not_tested.remove(n)
                 # n += 1
         return None
+    else:
+        # ordered based on channel gain
+        avg_H = []
+        for n in range(controller.player.number_of_user):
+            avg_H.append([np.sum(controller.player.users[n].H), n])
+        avg_H = sorted(avg_H, key=lambda x: x[0], reverse=True)
+        not_tested = [avg_H[n][1] for n in range(controller.player.number_of_user)]
+        # print("not_tested", not_tested)
+        n = 0
+        while len(not_tested) > n:
+            if controller.request[not_tested[n]] is not None:
+                return [controller.request[not_tested[n]]]
+                # get_requests(controller.request, controller.request[not_tested[n]], selection)
+            else:
+                n += 1
+        return None
+
