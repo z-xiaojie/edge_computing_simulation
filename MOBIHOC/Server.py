@@ -8,6 +8,7 @@ from Client import worker, create_state, check_worker
 import threading
 import json
 import time
+import traceback
 from Device import Device
 from Optimization import Optimization
 import copy
@@ -132,7 +133,6 @@ class Controller(threading.Thread, Optimization):
                 self.c.append(c)
                 start_new_thread(self.client_threaded, (c,))
             except Exception as e:
-                print(e.__str__())
                 break
 
     def close(self):
@@ -142,7 +142,7 @@ class Controller(threading.Thread, Optimization):
                 self.send_msg(c, message.encode('ascii'))
                 c.close()
             except socket.error:
-                continue
+                pass
         self.s.close()
 
     def notify_opt(self):
@@ -184,6 +184,7 @@ class Controller(threading.Thread, Optimization):
                     while not self.check_worker([n for n in range(self.player.number_of_user)]):
                         pass
                     self.close()
-            except socket.error:
-                self.close()
-                return
+            except Exception as e:
+                # print(traceback.format_exc())
+                # return
+                pass

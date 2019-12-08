@@ -114,7 +114,7 @@ def test(args, iteration, increment, priority, full, clean_cache=True, channel_a
     print("adjusted local   CPU", opt_cpu)
     print("adjusted remote  CPU", opt_e_cpu, np.sum(opt_e_cpu))
     print("data", [round(player.users[n].local_to_remote_size / 8000, 5) for n in range(player.number_of_user)])
-    print("              deadline", [round(player.users[n].DAG.D / 1000, 4) for n in range(number_of_user)])
+    print("              deadline", [round(player.users[n].DAG.D / 1000, 4) for n in range(player.number_of_user)])
     print("           finish time", list(np.round(np.array(transmission) + np.array(computation) + np.array(edge_computation),4)))
     print("     transmission time", transmission)
     print("     computation  time", computation)
