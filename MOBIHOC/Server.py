@@ -173,7 +173,7 @@ class Controller(threading.Thread, Optimization):
                     result = json.loads(str(data.decode('ascii')))
                     request = result["req"]
                     doing = result["doing"]
-                    # print("request", request)
+                    print("request", request)
                     message = "waiting"
                     self.send_msg(c, message.encode('ascii'))
                     self.lock.acquire()
